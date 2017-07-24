@@ -1,5 +1,7 @@
 deploy:
   stage: deploy
+  only:
+    - master
   tags:
     - experimental
   variables:
