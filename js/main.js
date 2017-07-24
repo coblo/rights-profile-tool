@@ -16,6 +16,8 @@ $(function() {
 	var idx = 0,
 		sliderHeight;
 
+	var globalInfo = {};
+
 	$('#start').on('click', function() {
 
 		sliderHeight = $$questions[0][0].scrollHeight;
@@ -135,6 +137,8 @@ $(function() {
 			$tooltips.hide();
 
 			if (valid.goto === questions.length) {
+
+				console.log(globalInfo);
 
 				document.body.classList.add('finished');
 
@@ -365,35 +369,8 @@ $(function() {
 
 		radio: function(question, $question) {
 
-			var $checked = $question.find('input[type="radio"]');
-			var value = 0,
-				valueAddition = '';
-
-			$checked.each(function(i, $field) {
-
-				if ($field.checked === true) {
-
-					value += Math.pow(2, i);
-
-					if (question.choices[i].type === 'free') {
-
-						valueAddition += ':' + $('#question-' + $question.data('idx') + '-' + i).val();
-
-					}
-
-				}
-
-			});
-
-			return btoa(value + valueAddition).replace(/=+$/, '');
-
-		},
-
-		checkbox: function(question, $question) {
-
-			var $$fields = $question.find('input[type="checkbox"]');
-			var value = 0,
-				valueAddition = '';
+			var $$fields = $question.find('input[type="radio"]');
+			var value = 0;
 
 			$$fields.each(function(i, $field) {
 
@@ -403,7 +380,9 @@ $(function() {
 
 					if (question.choices[i].type === 'free') {
 
-						valueAddition += ':' + $('#question-' + $question.data('idx') + '-' + i).val();
+						var idx_i = $question.data('idx') + '-' + i;
+
+						globalInfo[idx_i] = $('#question-' + idx_i).val();
 
 					}
 
@@ -411,15 +390,41 @@ $(function() {
 
 			});
 
-			return btoa(value + valueAddition).replace(/=+$/, '');
+			return btoa(value).replace(/=+$/, '');
+
+		},
+
+		checkbox: function(question, $question) {
+
+			var $$fields = $question.find('input[type="checkbox"]');
+			var value = 0;
+
+			$$fields.each(function(i, $field) {
+
+				if ($field.checked === true) {
+
+					value += Math.pow(2, i);
+
+					if (question.choices[i].type === 'free') {
+
+						var idx_i = $question.data('idx') + '-' + i;
+
+						globalInfo[idx_i] = $('#question-' + idx_i).val();
+
+					}
+
+				}
+
+			});
+
+			return btoa(value).replace(/=+$/, '');
 
 		},
 
 		date: function(question, $question) {
 
 			var $$fields = $question.find('.pickadate-here');
-			var value = 0,
-				valueAddition = '';
+			var value = 0;
 
 			$$fields.each(function(i, $field) {
 
@@ -429,16 +434,17 @@ $(function() {
 
 					value += Math.pow(2, i);
 
-					valueAddition += ':' +
-						[dateObj.obj.getFullYear(), dateObj.obj.getMonth() + 1, dateObj.obj.getDate()]
-						.map(function(el) { if (el > 1000) return el; return el < 10 ? '0' + el : el; })
+					var idx_i = $question.data('idx') + '-' + i;
+
+					globalInfo[idx_i] = [dateObj.obj.getFullYear(), dateObj.obj.getMonth() + 1, dateObj.obj.getDate()]
+						.map(function(el) { if (el > 31) return el; return el < 10 ? '0' + el : el; })
 						.join('-');
 
 				}
 
 			});
 
-			return btoa(value + valueAddition).replace(/=+$/, '');
+			return btoa(value).replace(/=+$/, '');
 
 		}
 
@@ -446,7 +452,7 @@ $(function() {
 
 	var recover = {
 
-		radio: function(value, valueAdditions, question, $question) {
+		radio: function(value, question, $question) {
 
 			var $$labels = $question.find('.mdl-js-radio');
 
@@ -459,11 +465,11 @@ $(function() {
 
 					$$labels[bit].MaterialRadio.check();
 
-					if (question.choices[bit].type === 'free') {
-
-						$$labels[bit].nextElementSibling.MaterialTextfield.change(valueAdditions.shift());
-
-					}
+					// if (question.choices[bit].type === 'free') {
+					//
+					// 	$$labels[bit].nextElementSibling.MaterialTextfield.change(valueAdditions.shift());
+					//
+					// }
 
 				}
 
@@ -473,7 +479,7 @@ $(function() {
 
 		},
 
-		checkbox: function(value, valueAdditions, question, $question) {
+		checkbox: function(value, question, $question) {
 
 			var $$labels = $question.find('.mdl-js-checkbox');
 
@@ -486,11 +492,11 @@ $(function() {
 
 					$$labels[bit].MaterialCheckbox.check();
 
-					if (question.choices[bit].type === 'free') {
-
-						$$labels[bit].nextElementSibling.MaterialTextfield.change(valueAdditions.shift());
-
-					}
+					// if (question.choices[bit].type === 'free') {
+					//
+					// 	$$labels[bit].nextElementSibling.MaterialTextfield.change(valueAdditions.shift());
+					//
+					// }
 
 				}
 
@@ -500,7 +506,7 @@ $(function() {
 
 		},
 
-		date: function(value, valueAdditions, question, $question) {
+		date: function(value, question, $question) {
 
 			var $$fields = $question.find('.pickadate-here');
 
@@ -511,11 +517,11 @@ $(function() {
 
 				if (bitSet) {
 
-					var dateParts = valueAdditions.shift().split('-');
-
-					dateParts[1]--; // month is zero based
-
-					$($$fields[bit]).pickadate('picker').set('select', dateParts);
+					// var dateParts = valueAdditions.shift().split('-');
+					//
+					// dateParts[1]--; // month is zero based
+					//
+					// $($$fields[bit]).pickadate('picker').set('select', dateParts);
 
 				}
 
@@ -609,7 +615,7 @@ $(function() {
 
 			var codeParts = code.split(':');
 
-			recover[question.type](parseInt(codeParts[0]), codeParts.slice(1), question, $question);
+			recover[question.type](parseInt(codeParts[0]), question, $question);
 
 		});
 
