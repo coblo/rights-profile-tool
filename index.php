@@ -171,11 +171,17 @@ $questions = [
 			],
 			[
 				'type' => 'given',
-				'name' => 'Social Sharing (incl. Reproduce)'
+				'name' => 'Social Sharing (incl. Reproduce)',
+				'requirement' => [
+					'checked' => ['7-0']
+				]
 			],
 			[
 				'type' => 'given',
-				'name' => 'Derive (incl. Reproduce)'
+				'name' => 'Derive (incl. Reproduce)',
+				'requirement' => [
+					'checked' => ['7-0']
+				]
 			],
 			[
 				'type' => 'given',

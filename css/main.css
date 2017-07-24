@@ -142,6 +142,11 @@ body > .mdl-tooltip[data-mdl-for^="errors-"] {
 	margin-left: .5em;
 }
 
+.mdl-js-radio.parent-required,
+.mdl-js-checkbox.parent-required {
+	color: #ff565b;
+}
+
 section .choices {
 	text-align: left;
 	padding: 0 16px;

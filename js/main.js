@@ -132,6 +132,8 @@ $(function() {
 		}
 		else {
 
+			$question.find('.parent-required').removeClass('parent-required');
+
 			$badges.removeAttr('data-badge');
 
 			$tooltips.hide();
@@ -245,6 +247,64 @@ $(function() {
 						bool: false,
 						reason: 'You have to check at least one option to proceed'
 					};
+
+				}
+
+			}
+
+			var requirements = {};
+			question.choices.forEach(function(el, i) {
+
+				if ($$fields[i].checked === true && el.requirement) {
+
+					if (el.requirement.checked) {
+
+						requirements.checked = requirements.checked || {};
+
+						el.requirement.checked.forEach(function(idx_i) {
+
+							requirements.checked[idx_i] = true;
+
+						});
+
+					}
+
+				}
+
+			});
+
+			if ('checked' in requirements) {
+
+				for (var idx_i in requirements.checked) {
+
+					var trash = idx_i.split('-'),
+						idx = parseInt(trash[0]),
+						i = parseInt(trash[1]);
+
+					var $target = $('[name="question-' + idx + '"][value="' + i + '"]');
+
+					if (!$target.is(':checked')) {
+
+						var $targetLabel = $target.parent('.mdl-js-radio, .mdl-js-checkbox');
+
+						// same page
+						if (idx === questions.indexOf(question)) {
+
+							$targetLabel.addClass('parent-required');
+
+							return {
+								bool: false,
+								reason: 'You need to check the option "' + question.choices[i].name + '"'
+							};
+
+						}
+						else {
+
+							// todo do we need this case?
+
+						}
+
+					}
 
 				}
 
