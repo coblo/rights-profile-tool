@@ -132,9 +132,8 @@ $questions = [
 				'goto' => 6
 			],
 			[
-				'type' => 'given',
-				'name' => 'Exclusive', // todo make independent
-				'goto' => 6
+				'type' => 'checkbox',
+				'name' => 'Exclusive'
 			]
 		],
 		'goto' => null

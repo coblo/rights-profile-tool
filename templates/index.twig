@@ -68,6 +68,21 @@
 
 													{% endif %}
 
+													{% if choice.type == 'checkbox' %}
+
+														<div class="mdl-grid">
+															<div class="mdl-cell mdl-cell--12-col">
+																<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+
+																	<input type="checkbox" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-checkbox__input">
+																	<span class="mdl-checkbox__label">{{ choice.name }}</span>
+
+																</label>
+															</div>
+														</div>
+
+													{% endif %}
+
 													{% if choice.type == 'free' %}
 
 														<div class="mdl-grid input">
