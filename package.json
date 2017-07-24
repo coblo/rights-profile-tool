@@ -1,0 +1,10 @@
+{
+	"name": "profile-rights-tool",
+	"version": "0.1.0",
+	"dependencies": {
+		"getcomposer": "*"
+	},
+	"scripts": {
+		"live-setup": "npm --silent update --only=production && composer self-update && composer update --no-dev"
+	}
+}

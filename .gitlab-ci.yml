@@ -1,0 +1,10 @@
+deploy:
+  stage: deploy
+  tags:
+    - experimental
+  variables:
+    HOST_PORT: "127.0.0.1:9002"
+  script:
+    - docker-compose build
+    - docker-compose up -d
+ 
