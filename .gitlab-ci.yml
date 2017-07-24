@@ -12,3 +12,4 @@ deploy:
   environment:
     name: production
     url: https://rights-profile-tool.content-blockchain.creations.de/
+
