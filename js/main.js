@@ -56,7 +56,7 @@ $(function() {
 		var question = questions[idx],
 			$question = $$questions[idx];
 
-		var goto = idx - 1;
+		var goto = question.backto;
 
 		translateOffset = -goto * translationOffsetPerImage;
 
@@ -151,6 +151,8 @@ $(function() {
 				return;
 
 			}
+
+			questions[valid.goto].backto = idx;
 
 			translateOffset = -valid.goto * translationOffsetPerImage;
 
