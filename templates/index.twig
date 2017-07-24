@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<title></title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/material.min.css">
+		<link rel="stylesheet" href="css/pickadate-material.css">
+		<link rel="stylesheet" href="css/main.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="js/material.min.js"></script>
+		<script src="js/picker.js"></script>
+		<script src="js/picker.date.js"></script>
+		<script src="js/main.js"></script>
+		<script>
+			var questions = {{ questions|json_encode|raw }}
+		</script>
+	</head>
+	<body>
+		<div class="wrap">
+			<div id="introduction">
+				todo: add text<br>
+				<br>
+				<button id="start" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Start</button>
+			</div>
+
+			<div id="questions">
+				<div class="mdl-card mdl-shadow--2dp">
+					<div id="questions-slider">
+						<div class="container">
+							{% for idx, question in questions %}
+
+								<section id="question-{{ idx }}" data-idx="{{ idx }}" class="{{ question.type }}{% if question.required %} required{% endif %}">
+									<div class="mdl-card__title">
+										<h2 class="mdl-card__title-text">{{ question.name }}</h2>
+									</div>
+
+									<div class="card-content">
+
+										<div class="mdl-card__supporting-text">{{ question.text|raw }}</div>
+
+										{% if question.type != 'date' %}
+
+											<h3><span id="errors-{{ idx }}">{{ question.question }}</span><span class="mdl-badge mdl-badge--overlap"></span></h3>
+
+										{% endif %}
+
+										{% if question.type == 'radio' %}
+
+											<div class="choices">
+
+												{% for _idx, choice in question.choices %}
+
+													{% if choice.type == 'given' %}
+
+														<div class="mdl-grid">
+															<div class="mdl-cell mdl-cell--12-col">
+																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+
+																	<input type="radio" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-radio__button">
+																	<span class="mdl-radio__label">{{ choice.name }}</span>
+
+																</label>
+															</div>
+														</div>
+
+													{% endif %}
+
+													{% if choice.type == 'free' %}
+
+														<div class="mdl-grid input">
+															<div class="mdl-cell mdl-cell--12-col">
+																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+																	<input type="radio" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-radio__button">
+																</label>
+																<div class="mdl-textfield mdl-js-textfield">
+																	<input class="mdl-textfield__input" type="text" name="question-{{ idx }}" id="question-{{ idx }}-{{ _idx }}">
+																	<label class="mdl-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ choice.placeholder }}</label>
+																</div>
+															</div>
+														</div>
+
+													{% endif %}
+
+												{% endfor %}
+
+											</div>
+
+										{% endif %}
+
+										{% if question.type == 'checkbox' %}
+
+											<div class="choices">
+
+												{% for _idx, choice in question.choices %}
+
+													{% if choice.type == 'given' %}
+
+														<div class="mdl-grid">
+															<div class="mdl-cell mdl-cell--12-col">
+																<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+
+																	<input type="checkbox" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-checkbox__input">
+																	<span class="mdl-checkbox__label">{{ choice.name }}</span>
+
+																</label>
+															</div>
+														</div>
+
+													{% endif %}
+
+													{% if choice.type == 'free' %}
+
+														<div class="mdl-grid input">
+															<div class="mdl-cell mdl-cell--12-col">
+																<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+																	<input type="checkbox" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-checkbox__input">
+																</label>
+																<div class="mdl-textfield mdl-js-textfield">
+																	<input class="mdl-textfield__input" type="text" name="question-{{ idx }}" id="question-{{ idx }}-{{ _idx }}">
+																	<label class="mdl-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ choice.placeholder }}</label>
+																</div>
+															</div>
+														</div>
+
+													{% endif %}
+
+												{% endfor %}
+
+											</div>
+
+										{% endif %}
+
+										{% if question.type == 'date' %}
+
+											{% for _idx, date in question.dates %}
+
+												<label>
+													<h3><span id="errors-{{ idx }}-{{ _idx }}">{{ date.name }}</span><span class="mdl-badge mdl-badge--overlap"></span></h3>
+
+													<div class="mdl-textfield mdl-js-textfield">
+														<input class="mdl-textfield__input pickadate-here" type="text" name="question-{{ idx }}-{{ _idx }}" id="question-{{ idx }}-{{ _idx }}">
+														<label class="mdl-textfield__label" for="question-{{ idx }}-{{ _idx }}" for="question-{{ idx }}-{{ _idx }}">Select</label>
+													</div>
+												</label>
+
+											{% endfor %}
+
+										{% endif %}
+
+									</div>
+								</section>
+
+							{% endfor %}
+						</div>
+					</div>
+					<div class="mdl-card__actions mdl-card--border">
+						<div class="w-60">
+							Question&nbsp;<span id="page-count">1</span>&nbsp;of {{ questions|length }}
+							<div id="progress" class="mdl-progress mdl-js-progress"></div>
+						</div>
+
+						<div class="w-40">
+							<button class="back mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" disabled>Back</button>
+							<button class="continue mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Continue</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="result">
+				Your Rights Profile Code is:&nbsp;<span id="rights-profile-code"></span><br>
+				todo: add contract
+			</div>
+		</div>
+
+		{% for idx, question in questions %}
+
+			{% if question.type != 'date' %}
+
+				<div class="mdl-tooltip mdl-tooltip--large mdl-tooltip--right mdl-tooltip--bottom" data-mdl-for="errors-{{ idx }}"></div>
+
+			{% else %}
+
+				{% for _idx, date in question.dates %}
+
+					<div class="mdl-tooltip mdl-tooltip--large mdl-tooltip--right mdl-tooltip--bottom" data-mdl-for="errors-{{ idx }}-{{ _idx }}"></div>
+
+				{% endfor %}
+
+			{% endif %}
+
+		{% endfor %}
+
+		<div id="toast-container" class="mdl-js-snackbar mdl-snackbar">
+			<div class="mdl-snackbar__text"></div>
+			<button class="mdl-snackbar__action" type="button"></button>
+		</div>
+	</body>
+</html>
