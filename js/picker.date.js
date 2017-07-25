@@ -1319,15 +1319,15 @@ return _.node(
 	    // * For Firefox forms to submit, make sure to set the buttons’ `type` attributes as “button”.
 	    _.node(
 		'div',
-		_.node( 'button', settings.today, "mdl-button mdl-js-button mdl-button--accent picker__today",
+		_.node( 'button', settings.today, "mdc-button mdc-button--accent picker__today",
 		    'type=button data-pick=' + nowObject.pick +
 		    ( isOpen && !calendar.disabled(nowObject) ? '' : ' disabled' ) + ' ' +
 		    _.ariaAttr({ controls: calendar.$node[0].id }) ) +
-		_.node( 'button', settings.clear, "mdl-button mdl-js-button mdl-button--accent picker__clear",
+		_.node( 'button', settings.clear, "mdc-button mdc-button--accent picker__clear",
 		    'type=button data-clear=1' +
 		    ( isOpen ? '' : ' disabled' ) + ' ' +
 		    _.ariaAttr({ controls: calendar.$node[0].id }) ) +
-		_.node('button', settings.close, "mdl-button mdl-js-button mdl-button--primary picker__close",
+		_.node('button', settings.close, "mdc-button mdc-button--primary picker__close",
 		    'type=button data-close=true ' +
 		    ( isOpen ? '' : ' disabled' ) + ' ' +
 		    _.ariaAttr({ controls: calendar.$node[0].id }) ),

@@ -54,7 +54,7 @@ body.started.finished #result {
 	flex-direction: column;
 }
 
-#questions > .mdl-card {
+#questions > .mdc-card {
 	width: 100%;
 	max-height: 100%;
 	margin: 2em;
@@ -77,6 +77,7 @@ body.started.finished #result {
 	transition: transform .5s ease;
 	will-change: transform;
 	flex-shrink: 0;
+	background: #fff;
 }
 
 #questions-slider > .container:after {
@@ -93,18 +94,52 @@ body.started.finished #result {
 	flex-direction: column;
 }
 
-body > .mdl-tooltip[data-mdl-for^="errors-"] {
-	display: none;
-	margin-left: .5em;
-}
-
-.mdl-card__title {
-	background: #3f51b5;
+.mdc-card__media {
+	padding: 0;
 	flex-shrink: 0;
 }
 
-.mdl-card__title-text {
+.mdc-card__title {
 	color: #fff;
+}
+
+.date-aligner {
+	display: flex;
+	align-items: flex-end;
+	margin: 12px 0;
+}
+
+.date-aligner .mdc-textfield {
+	margin-top: 0 !important;
+	margin-bottom: 0;
+}
+
+.date-aligner button {
+	margin-left: .5rem;
+}
+
+.mdc-form-field > .mdc-checkbox ,
+.mdc-form-field > .mdc-radio {
+	top: -5px;
+}
+
+.mdc-form-field > .mdc-checkbox + label,
+.mdc-form-field > .mdc-radio + label {
+	position: relative;
+	padding-bottom: 10px;
+}
+
+.mdc-form-field > .mdc-checkbox.invalid + label:after,
+.mdc-form-field > .mdc-radio.invalid + label:after {
+	content: attr(data-error);
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	padding-left: 4px;
+	font-size: 10px;
+	white-space: nowrap;
+	line-height: 1;
+	color: #d50000;
 }
 
 .card-content {
@@ -113,18 +148,20 @@ body > .mdl-tooltip[data-mdl-for^="errors-"] {
 	overflow: auto;
 }
 
-.mdl-card__actions {
+.mdc-card__actions {
+	border-top: 1px solid rgba(0,0,0,.1);
 	display: flex;
 	flex-shrink: 0;
+	background: #fff;
 }
 
-.mdl-card__actions .w-60 {
+.mdc-card__actions .w-60 {
 	display: flex;
 	flex-basis: 60%;
 	align-items: center;
 }
 
-.mdl-card__actions .w-40 {
+.mdc-card__actions .w-40 {
 	display: flex;
 	flex-basis: 40%;
 	align-items: center;
@@ -132,19 +169,14 @@ body > .mdl-tooltip[data-mdl-for^="errors-"] {
 	justify-content: flex-end;
 }
 
-.mdl-card__actions .w-60 .mdl-progress {
+.mdc-card__actions .w-60 .mdc-linear-progress {
 	width: auto;
 	margin-left: .5em;
 	flex: 1;
 }
 
-.mdl-card__actions .w-40 button {
+.mdc-card__actions .w-40 button {
 	margin-left: .5em;
-}
-
-.mdl-js-radio.parent-required,
-.mdl-js-checkbox.parent-required {
-	color: #ff565b;
 }
 
 section .choices {
@@ -152,37 +184,9 @@ section .choices {
 	padding: 0 16px;
 }
 
-section .choices > .mdl-grid {
-	align-items: center;
-	padding: 0;
-	min-height: 43px;
-}
-
-section .choices > .mdl-grid.input .mdl-checkbox {
-	width: auto;
-}
-
-section .choices > .mdl-grid.input > .mdl-cell {
-	display: flex;
-	align-items: center;
-}
-
-section .choices .mdl-textfield {
-	padding: 0;
-}
-
-section .choices .mdl-textfield label {
-	top: 4px;
-}
-
-section .choices .mdl-textfield label:after,
-section .choices .mdl-textfield.is-focused label:after {
-	bottom: 0;
-}
-
 @media screen and (min-width: 1024px) {
 
-	#questions > .mdl-card {
+	#questions > .mdc-card {
 		width: 40vw;
 	}
 

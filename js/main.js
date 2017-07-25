@@ -28,11 +28,7 @@ $(function() {
 
 	});
 
-	$progress.on('mdl-componentupgraded', function() {
-
-		this.MaterialProgress.setProgress(1 / questions.length * 100);
-
-	});
+	$progress[0].MDCLinearProgress.progress = 1 / questions.length;
 
 	$('.pickadate-here').pickadate({
 		container: document.body,
@@ -43,11 +39,27 @@ $(function() {
 
 				this.close();
 
+				this.$node.parent('.mdc-textfield').find('.mdc-textfield__label').removeClass('mdc-textfield__label--float-above');
+
+			}
+			else {
+
+				this.$node.parent('.mdc-textfield').find('.mdc-textfield__label').addClass('mdc-textfield__label--float-above');
+
 			}
 
-			this.$node.parent('.mdl-js-textfield')[0].MaterialTextfield.change(this.$node.val());
-
 		}
+	});
+
+	$('.date-aligner button').click(function(e) {
+
+		var picker = $(this.previousElementSibling).find('.pickadate-here').pickadate('picker');
+
+		e.stopPropagation();
+		e.preventDefault();
+
+		picker.open();
+
 	});
 
 	// todo also skip the unwanted questions when going back
@@ -69,7 +81,7 @@ $(function() {
 		$slider.css('height', sliderHeight);
 
 		$pageCount.text(goto + 1);
-		$progress[0].MaterialProgress.setProgress((goto + 1) / questions.length * 100);
+		$progress[0].MDCLinearProgress.progress = (goto + 1) / questions.length;
 
 		if (idx === 1) {
 
@@ -92,9 +104,7 @@ $(function() {
 		var question = questions[idx],
 			$question = $$questions[idx];
 
-		var valid = validate[question.type](question, $question),
-			$badges = $question.find('h3 .mdl-badge'),
-			$tooltips = $('body > .mdl-tooltip[data-mdl-for^="errors-' + idx + '"]');
+		var valid = validate[question.type](question, $question);
 
 		if (valid.bool === false) {
 
@@ -102,15 +112,7 @@ $(function() {
 
 				for (var _idx in valid.reasons) {
 
-					var $badge = $($badges[_idx]),
-						$tooltip = $($tooltips[_idx]),
-						reason = valid.reasons[_idx];
-
-					$badge.attr('data-badge', '!');
-
-					$tooltip.text(reason).show();
-
-					componentHandler.upgradeElement($badge[0]);
+					var reason = valid.reasons[_idx];
 
 					toast(reason);
 
@@ -119,24 +121,12 @@ $(function() {
 			}
 			else {
 
-				$badges.attr('data-badge', '!');
-
-				$tooltips.text(valid.reason).show();
-
-				componentHandler.upgradeElement($badges[0]);
-
 				toast(valid.reason);
 
 			}
 
 		}
 		else {
-
-			$question.find('.parent-required').removeClass('parent-required');
-
-			$badges.removeAttr('data-badge');
-
-			$tooltips.hide();
 
 			if (valid.goto === questions.length) {
 
@@ -165,7 +155,7 @@ $(function() {
 			$slider.css('height', sliderHeight);
 
 			$pageCount.text(valid.goto + 1);
-			$progress[0].MaterialProgress.setProgress((valid.goto + 1) / questions.length * 100);
+			$progress[0].MDCLinearProgress.progress = (valid.goto + 1)/ questions.length;
 
 			if (idx === 0) {
 
@@ -595,10 +585,17 @@ $(function() {
 
 	}
 
-	var $snackbarContainer = document.querySelector('#toast-container');
+	var snackbar = document.querySelector('#toast-container').MDCSnackbar;
 	function toast(text) {
 
-		$snackbarContainer.MaterialSnackbar.showSnackbar({message: text});
+		var data =  {
+			message: text,
+			actionOnBottom: false,
+			multiline: false,
+			timeout: 2750
+		};
+
+		snackbar.show(data);
 
 	}
 

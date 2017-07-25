@@ -6,46 +6,43 @@
 		<title></title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="css/material.min.css">
+		<link rel="stylesheet" href="node_modules/material-components-web/dist/material-components-web.css">
 		<link rel="stylesheet" href="css/pickadate-material.css">
 		<link rel="stylesheet" href="css/main.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script src="js/material.min.js"></script>
 		<script src="js/picker.js"></script>
 		<script src="js/picker.date.js"></script>
 		<script src="js/main.js"></script>
 		<script>
-			var questions = {{ questions|json_encode|raw }}
+			var questions = {{ questions|json_encode|raw }};
 		</script>
 	</head>
-	<body>
+	<body class="mdc-typography">
 		<div class="wrap">
 			<div id="introduction">
 				todo: add text<br>
 				<br>
-				<button id="start" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Start</button>
+				<button id="start" type="button" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Start</button>
 			</div>
 
 			<div id="questions">
-				<div class="mdl-card mdl-shadow--2dp">
+				<div class="mdc-card mdc-elevation--z2">
 					<div id="questions-slider">
 						<div class="container">
 							{% for idx, question in questions %}
 
 								<section id="question-{{ idx }}" data-idx="{{ idx }}" class="{{ question.type }}{% if question.required %} required{% endif %}">
-									<div class="mdl-card__title">
-										<h2 class="mdl-card__title-text">{{ question.name }}</h2>
+									<div class="mdc-card__media mdc-theme--primary-bg">
+										<section class="mdc-card__primary">
+											<h1 class="mdc-card__title mdc-card__title--large">{{ question.name }}</h1>
+										</section>
 									</div>
 
 									<div class="card-content">
 
-										<div class="mdl-card__supporting-text">{{ question.text|raw }}</div>
+										<div class="mdc-card__supporting-text">{{ question.text|raw }}</div>
 
-										{% if question.type != 'date' %}
-
-											<h3><span id="errors-{{ idx }}">{{ question.question }}</span><span class="mdl-badge mdl-badge--overlap"></span></h3>
-
-										{% endif %}
+										<h3>{{ question.question }}</h3>
 
 										{% if question.type == 'radio' %}
 
@@ -53,48 +50,39 @@
 
 												{% for _idx, choice in question.choices %}
 
-													{% if choice.type == 'given' %}
+													{% if not loop.first %}
 
-														<div class="mdl-grid">
-															<div class="mdl-cell mdl-cell--12-col">
-																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-
-																	<input type="radio" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-radio__button">
-																	<span class="mdl-radio__label">{{ choice.name }}</span>
-
-																</label>
-															</div>
-														</div>
+														<br>
 
 													{% endif %}
 
 													{% if choice.type == 'checkbox' %}
 
-														<div class="mdl-grid">
-															<div class="mdl-cell mdl-cell--12-col">
-																<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-
-																	<input type="checkbox" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-checkbox__input">
-																	<span class="mdl-checkbox__label">{{ choice.name }}</span>
-
-																</label>
-															</div>
-														</div>
-
-													{% endif %}
-
-													{% if choice.type == 'free' %}
-
-														<div class="mdl-grid input">
-															<div class="mdl-cell mdl-cell--12-col">
-																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-																	<input type="radio" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-radio__button">
-																</label>
-																<div class="mdl-textfield mdl-js-textfield">
-																	<input class="mdl-textfield__input" type="text" name="question-{{ idx }}" id="question-{{ idx }}-{{ _idx }}">
-																	<label class="mdl-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ choice.placeholder }}</label>
+														<div class="mdc-form-field">
+															<div class="mdc-checkbox">
+																<input type="checkbox" id="question-{{ idx }}-{{ _idx }}" class="mdc-checkbox__native-control" value="{{ _idx }}">
+																<div class="mdc-checkbox__background">
+																	<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+																		<path class="mdc-checkbox__checkmark__path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+																	</svg>
+																	<div class="mdc-checkbox__mixedmark"></div>
 																</div>
 															</div>
+
+															<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
+														</div>
+
+													{% else %}
+
+														<div class="mdc-form-field">
+															<div class="mdc-radio">
+																<input class="mdc-radio__native-control" type="radio" id="question-{{ idx }}-{{ _idx }}" name="question-{{ idx }}" value="{{ _idx }}">
+																<div class="mdc-radio__background">
+																	<div class="mdc-radio__outer-circle"></div>
+																	<div class="mdc-radio__inner-circle"></div>
+																</div>
+															</div>
+															<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
 														</div>
 
 													{% endif %}
@@ -111,36 +99,25 @@
 
 												{% for _idx, choice in question.choices %}
 
-													{% if choice.type == 'given' %}
+													{% if not loop.first %}
 
-														<div class="mdl-grid">
-															<div class="mdl-cell mdl-cell--12-col">
-																<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-
-																	<input type="checkbox" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-checkbox__input">
-																	<span class="mdl-checkbox__label">{{ choice.name }}</span>
-
-																</label>
-															</div>
-														</div>
+														<br>
 
 													{% endif %}
 
-													{% if choice.type == 'free' %}
-
-														<div class="mdl-grid input">
-															<div class="mdl-cell mdl-cell--12-col">
-																<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-																	<input type="checkbox" name="question-{{ idx }}" value="{{ _idx }}" class="mdl-checkbox__input">
-																</label>
-																<div class="mdl-textfield mdl-js-textfield">
-																	<input class="mdl-textfield__input" type="text" name="question-{{ idx }}" id="question-{{ idx }}-{{ _idx }}">
-																	<label class="mdl-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ choice.placeholder }}</label>
-																</div>
+													<div class="mdc-form-field">
+														<div class="mdc-checkbox">
+															<input type="checkbox" id="question-{{ idx }}-{{ _idx }}" class="mdc-checkbox__native-control" value="{{ _idx }}">
+															<div class="mdc-checkbox__background">
+																<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+																	<path class="mdc-checkbox__checkmark__path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+																</svg>
+																<div class="mdc-checkbox__mixedmark"></div>
 															</div>
 														</div>
 
-													{% endif %}
+														<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
+													</div>
 
 												{% endfor %}
 
@@ -152,14 +129,16 @@
 
 											{% for _idx, date in question.dates %}
 
-												<label>
-													<h3><span id="errors-{{ idx }}-{{ _idx }}">{{ date.name }}</span><span class="mdl-badge mdl-badge--overlap"></span></h3>
+												<div class="date-aligner">
 
-													<div class="mdl-textfield mdl-js-textfield">
-														<input class="mdl-textfield__input pickadate-here" type="text" name="question-{{ idx }}-{{ _idx }}" id="question-{{ idx }}-{{ _idx }}">
-														<label class="mdl-textfield__label" for="question-{{ idx }}-{{ _idx }}" for="question-{{ idx }}-{{ _idx }}">Select</label>
+													<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+														<input type="text" id="question-{{ idx }}-{{ _idx }}" class="mdc-textfield__input pickadate-here">
+														<label class="mdc-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ date.name }}</label>
+														<div class="mdc-textfield__bottom-line"></div>
 													</div>
-												</label>
+													<button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Select</button>
+
+												</div>
 
 											{% endfor %}
 
@@ -171,17 +150,25 @@
 							{% endfor %}
 						</div>
 					</div>
-					<div class="mdl-card__actions mdl-card--border">
+					<section class="mdc-card__actions">
 						<div class="w-60">
 							Question&nbsp;<span id="page-count">1</span>&nbsp;of {{ questions|length }}
-							<div id="progress" class="mdl-progress mdl-js-progress"></div>
+							<div role="progressbar" class="mdc-linear-progress" id="progress" data-mdc-auto-init="MDCLinearProgress">
+								<div class="mdc-linear-progress__buffer"></div>
+								<div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+									<span class="mdc-linear-progress__bar-inner"></span>
+								</div>
+								<div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+									<span class="mdc-linear-progress__bar-inner"></span>
+								</div>
+							</div>
 						</div>
 
 						<div class="w-40">
-							<button class="back mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" disabled>Back</button>
-							<button class="continue mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Continue</button>
+							<button class="back mdc-button mdc-button--raised mdc-button--accent" data-mdc-auto-init="MDCRipple" disabled>Back</button>
+							<button class="continue mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Continue</button>
 						</div>
-					</div>
+					</section>
 				</div>
 			</div>
 
@@ -191,27 +178,14 @@
 			</div>
 		</div>
 
-		{% for idx, question in questions %}
-
-			{% if question.type != 'date' %}
-
-				<div class="mdl-tooltip mdl-tooltip--large mdl-tooltip--right mdl-tooltip--bottom" data-mdl-for="errors-{{ idx }}"></div>
-
-			{% else %}
-
-				{% for _idx, date in question.dates %}
-
-					<div class="mdl-tooltip mdl-tooltip--large mdl-tooltip--right mdl-tooltip--bottom" data-mdl-for="errors-{{ idx }}-{{ _idx }}"></div>
-
-				{% endfor %}
-
-			{% endif %}
-
-		{% endfor %}
-
-		<div id="toast-container" class="mdl-js-snackbar mdl-snackbar">
-			<div class="mdl-snackbar__text"></div>
-			<button class="mdl-snackbar__action" type="button"></button>
+		<div id="toast-container" class="mdc-snackbar" aria-live="assertive" aria-atomic="true" aria-hidden="true" data-mdc-auto-init="MDCSnackbar">
+			<div class="mdc-snackbar__text"></div>
+			<div class="mdc-snackbar__action-wrapper">
+				<button type="button" class="mdc-button mdc-snackbar__action-button"></button>
+			</div>
 		</div>
+
+		<script src="node_modules/material-components-web/dist/material-components-web.js"></script>
+		<script>mdc.autoInit();</script>
 	</body>
 </html>

@@ -2,3 +2,4 @@
 cache/twig/
 vendor/
 composer.lock
+node_modules/
