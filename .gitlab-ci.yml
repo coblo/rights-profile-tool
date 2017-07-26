@@ -13,3 +13,13 @@ deploy:
     name: production
     url: https://rights-profile-tool.content-blockchain.creations.de/
 
+mirror:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - apk --no-cache add git openssh-client bash
+    - eval $(ssh-agent -s)
+    - bash -c 'ssh-add <(echo "$GITHUB_KEY")'
+    - mkdir -p ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - git push --mirror git@github.com:coblo/rights-profile-tool.git
