@@ -13,11 +13,9 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'Original Creator'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Publisher / Exploiter'
 			]
 		],
@@ -31,12 +29,10 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'Temporarily unrestricted',
 				'goto' => 3
 			],
 			[
-				'type' => 'given',
 				'name' => 'Temporarily Restricted',
 				'goto' => 2
 			]
@@ -50,12 +46,21 @@ $questions = [
 		'question' => 'todo: add question',
 		'dates' => [
 			[
-				'name' => 'Date from'
+				'name' => 'Date from',
+				'store' => [
+					'global' => 'validFrom'
+				]
 			],
 			[
 				'required' => true,
-				'name' => 'Date to'
+				'name' => 'Date to',
+				'store' => [
+					'global' => 'validTo'
+				]
 			]
+		],
+		'store' => [
+			'none' => true
 		],
 		'goto' => 3
 	],
@@ -67,12 +72,10 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'Territorially unrestricted',
 				'goto' => 5
 			],
 			[
-				'type' => 'given',
 				'name' => 'Territorially Restricted',
 				'goto' => 4
 			]
@@ -86,6 +89,9 @@ $questions = [
 		'text' => 'todo: add text',
 		'question' => 'todo: add question',
 		'choices' => $countries,
+		'store' => [
+			'global' => 'countries'
+		],
 		'goto' => 5
 	],
 	5 => [
@@ -96,18 +102,19 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'All Rights',
 				'goto' => 12
 			],
 			[
-				'type' => 'given',
 				'name' => 'Some Rights',
 				'goto' => 6
 			],
 			[
 				'type' => 'checkbox',
-				'name' => 'Exclusive'
+				'name' => 'Exclusive',
+				'store' => [
+					'global' => 'exclusive'
+				]
 			]
 		],
 		'goto' => null
@@ -120,12 +127,10 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'None',
 				'goto' => 8
 			],
 			[
-				'type' => 'given',
 				'name' => 'Some Rights',
 				'goto' => 7
 			]
@@ -140,25 +145,21 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'Reproduce'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Social Sharing (incl. Reproduce)',
 				'requirement' => [
 					'checked' => ['7-0']
 				]
 			],
 			[
-				'type' => 'given',
 				'name' => 'Derive (incl. Reproduce)',
 				'requirement' => [
 					'checked' => ['7-0']
 				]
 			],
 			[
-				'type' => 'given',
 				'name' => 'Resale'
 			]
 		],
@@ -172,12 +173,10 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'None',
 				'goto' => 10
 			],
 			[
-				'type' => 'given',
 				'name' => 'Some Rights',
 				'goto' => 9
 			]
@@ -192,35 +191,27 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'Reproduce'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Distribute physical copy'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Make available for streaming'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Make available for downloading'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Lease'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Lend'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Advertise'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Derive'
 			]
 		],
@@ -234,11 +225,9 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'Specific User Group'
 			],
 			[
-				'type' => 'given',
 				'name' => 'General Public'
 			]
 		],
@@ -252,11 +241,9 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'type' => 'given',
 				'name' => 'Sublicense'
 			],
 			[
-				'type' => 'given',
 				'name' => 'Assign'
 			]
 		],

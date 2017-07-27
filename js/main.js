@@ -2,7 +2,7 @@ $(function() {
 
 	var $slider = $('#questions-slider'),
 		$container = $slider.find('.container'),
-		$$questions = Array.prototype.slice.call($container.children()).map(function($el) { return $($el); }), // array of jQuery objects
+		$$questions = $container.children().get().map(function($el) { return $($el); }), // array of jQuery objects
 		scrollHeights = $$questions.map(function($el) { return $el[0].scrollHeight; }), // todo: this still fails when resizing
 		maxSlides = 1000,
 		translationOffsetPerImage = 1 / maxSlides * 100,
@@ -16,11 +16,9 @@ $(function() {
 	var idx = 0,
 		sliderHeight;
 
-	var globalInfo = {};
-
 	$('#start').on('click', function() {
 
-		sliderHeight = $$questions[0][0].scrollHeight;
+		sliderHeight = scrollHeights[0];
 
 		$slider.css('height', sliderHeight);
 
@@ -33,20 +31,14 @@ $(function() {
 	$('.pickadate-here').pickadate({
 		container: document.body,
 		selectYears: 15,
+		onOpen: function() {
+
+			pickadateValidate(this, null, false);
+
+		},
 		onSet: function(ctx) {
 
-			if ('clear' in ctx) {
-
-				this.close();
-
-				this.$node.parent('.mdc-textfield').find('.mdc-textfield__label').removeClass('mdc-textfield__label--float-above');
-
-			}
-			else {
-
-				this.$node.parent('.mdc-textfield').find('.mdc-textfield__label').addClass('mdc-textfield__label--float-above');
-
-			}
+			pickadateValidate(this, ctx, true);
 
 		}
 	});
@@ -62,13 +54,31 @@ $(function() {
 
 	});
 
-	// todo also skip the unwanted questions when going back
+	$('section.multiselect button').on('click', function() {
+
+		var $this = $(this),
+			$question = $this.parents('section.multiselect'),
+			$lastSelect = $question.find('select:last-of-type'),
+			$clonedSelect = $lastSelect.clone(true);
+
+		$clonedSelect.find('option[default]').attr('selected', true);
+
+		$clonedSelect.insertAfter($lastSelect);
+
+		sliderHeight += $clonedSelect.outerHeight(true);
+
+		scrollHeights[$question.data('idx')] = sliderHeight;
+
+		$slider.css('height', sliderHeight);
+
+	});
+
 	$back.on('click', function() {
 
 		var question = questions[idx],
-			$question = $$questions[idx];
+			goto = question.backto;
 
-		var goto = question.backto;
+		delete question.backto;
 
 		translateOffset = -goto * translationOffsetPerImage;
 
@@ -76,9 +86,10 @@ $(function() {
 			transform: 'translate3d(' + translateOffset + '%, 0, 0)'
 		});
 
+		var oldSliderheight = sliderHeight;
 		sliderHeight += scrollHeights[goto] - scrollHeights[idx];
 
-		$slider.css('height', sliderHeight);
+		animateSliderHeight(oldSliderheight, sliderHeight);
 
 		$pageCount.text(goto + 1);
 		$progress[0].MDCLinearProgress.progress = (goto + 1) / questions.length;
@@ -110,9 +121,18 @@ $(function() {
 
 			if (question.type === 'date') {
 
+				var $fields = $question.find('.mdc-textfield'),
+					$errors = $question.find('.mdc-textfield-helptext');
+
 				for (var _idx in valid.reasons) {
 
 					var reason = valid.reasons[_idx];
+
+					$fields[_idx].classList.add('mdc-textfield--invalid');
+
+					$errors[_idx].classList.add('mdc-textfield-helptext--persistent');
+
+					$errors[_idx].innerText = reason;
 
 					toast(reason);
 
@@ -120,6 +140,8 @@ $(function() {
 
 			}
 			else {
+
+				$question.find('h3').addClass('error').attr('data-error', valid.reason);
 
 				toast(valid.reason);
 
@@ -130,17 +152,14 @@ $(function() {
 
 			if (valid.goto === questions.length) {
 
-				console.log(globalInfo);
-
-				document.body.classList.add('finished');
-
-				var rightsProfileCode = encodeResult();
-
-				$('#rights-profile-code').text(rightsProfileCode);
+				finished();
 
 				return;
 
 			}
+
+			$question.find('.mdc-checkbox.invalid, .mdc-radio.invalid').removeClass('invalid');
+			$question.find('h3').removeClass('error');
 
 			questions[valid.goto].backto = idx;
 
@@ -150,12 +169,13 @@ $(function() {
 				transform: 'translate3d(' + translateOffset + '%, 0, 0)'
 			});
 
+			var oldSliderheight = sliderHeight;
 			sliderHeight += scrollHeights[valid.goto] - scrollHeights[idx];
 
-			$slider.css('height', sliderHeight);
+			animateSliderHeight(oldSliderheight, sliderHeight);
 
 			$pageCount.text(valid.goto + 1);
-			$progress[0].MDCLinearProgress.progress = (valid.goto + 1)/ questions.length;
+			$progress[0].MDCLinearProgress.progress = (valid.goto + 1) / questions.length;
 
 			if (idx === 0) {
 
@@ -273,16 +293,18 @@ $(function() {
 						idx = parseInt(trash[0]),
 						i = parseInt(trash[1]);
 
-					var $target = $('[name="question-' + idx + '"][value="' + i + '"]');
+					var $target = $('#question-' + idx + '-' + i);
 
 					if (!$target.is(':checked')) {
 
-						var $targetLabel = $target.parent('.mdl-js-radio, .mdl-js-checkbox');
+						var $parent = $target.parent('.mdc-checkbox'),
+							$label = $parent.find('+ label');
+
+						$parent.addClass('invalid');
+						$label.attr('data-error', 'This option is required due to your selection');
 
 						// same page
 						if (idx === questions.indexOf(question)) {
-
-							$targetLabel.addClass('parent-required');
 
 							return {
 								bool: false,
@@ -391,7 +413,7 @@ $(function() {
 
 					if (dateObj === null) {
 
-						reasons[i] = '"' + date.name + '" has to be filled';
+						reasons[i] = 'You have to select a date';
 
 					}
 
@@ -413,177 +435,136 @@ $(function() {
 				goto: question.goto
 			};
 
-		}
-
-	};
-
-	var encode = {
-
-		radio: function(question, $question) {
-
-			var $$fields = $question.find('input[type="radio"]');
-			var value = 0;
-
-			$$fields.each(function(i, $field) {
-
-				if ($field.checked === true) {
-
-					value += Math.pow(2, i);
-
-					if (question.choices[i].type === 'free') {
-
-						var idx_i = $question.data('idx') + '-' + i;
-
-						globalInfo[idx_i] = $('#question-' + idx_i).val();
-
-					}
-
-				}
-
-			});
-
-			return btoa(value).replace(/=+$/, '');
-
 		},
 
-		checkbox: function(question, $question) {
+		multiselect: function(question, $question) {
 
-			var $$fields = $question.find('input[type="checkbox"]');
-			var value = 0;
+			var $fields = $question.find('.mdc-select');
 
-			$$fields.each(function(i, $field) {
+			if (question.required === true) {
 
-				if ($field.checked === true) {
+				if ($fields.get().reduce(function(acc, $el) { return acc + $el.value; }, '').length === 0) {
 
-					value += Math.pow(2, i);
-
-					if (question.choices[i].type === 'free') {
-
-						var idx_i = $question.data('idx') + '-' + i;
-
-						globalInfo[idx_i] = $('#question-' + idx_i).val();
-
-					}
+					return {
+						bool: false,
+						reason: 'You have to select at least one option to proceed'
+					};
 
 				}
 
-			});
+			}
 
-			return btoa(value).replace(/=+$/, '');
-
-		},
-
-		date: function(question, $question) {
-
-			var $$fields = $question.find('.pickadate-here');
-			var value = 0;
-
-			$$fields.each(function(i, $field) {
-
-				var dateObj = $($field).pickadate('picker').get('select');
-
-				if (dateObj !== null) {
-
-					value += Math.pow(2, i);
-
-					var idx_i = $question.data('idx') + '-' + i;
-
-					globalInfo[idx_i] = [dateObj.obj.getFullYear(), dateObj.obj.getMonth() + 1, dateObj.obj.getDate()]
-						.map(function(el) { if (el > 31) return el; return el < 10 ? '0' + el : el; })
-						.join('-');
-
-				}
-
-			});
-
-			return btoa(value).replace(/=+$/, '');
+			return {
+				bool: true,
+				goto: question.goto
+			};
 
 		}
 
 	};
 
-	var recover = {
+	var getSelection = {
 
-		radio: function(value, question, $question) {
+		radio: function(question, $question, additionalData) {
 
-			var $$labels = $question.find('.mdl-js-radio');
+			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]'),
+				value = null;
 
-			var bit = 0;
-			while(Math.pow(2, bit) <= value) {
+			question.choices.forEach(function(choice, i) {
 
-				var bitSet = (value >> bit) % 2 != 0;
+				var $input = $$inputs[i];
 
-				if (bitSet) {
+				if ('store' in choice) {
 
-					$$labels[bit].MaterialRadio.check();
+					if ('global' in choice.store) {
 
-					// if (question.choices[bit].type === 'free') {
-					//
-					// 	$$labels[bit].nextElementSibling.MaterialTextfield.change(valueAdditions.shift());
-					//
-					// }
+						additionalData[choice.store.global] = $input.checked;
+
+					}
+
+					return;
 
 				}
 
-				bit++;
+				if ($input.checked) {
 
-			}
+					value = Math.pow(2, i);
+
+				}
+
+			});
+
+			return value;
 
 		},
 
-		checkbox: function(value, question, $question) {
+		checkbox: function(question, $question, additionalData) {
 
-			var $$labels = $question.find('.mdl-js-checkbox');
+			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]'),
+				value = 0;
 
-			var bit = 0;
-			while(Math.pow(2, bit) <= value) {
+			question.choices.forEach(function(choice, i) {
 
-				var bitSet = (value >> bit) % 2 != 0;
+				var $input = $$inputs[i];
 
-				if (bitSet) {
+				if ('store' in choice) {
 
-					$$labels[bit].MaterialCheckbox.check();
+					if ('global' in choice.store) {
 
-					// if (question.choices[bit].type === 'free') {
-					//
-					// 	$$labels[bit].nextElementSibling.MaterialTextfield.change(valueAdditions.shift());
-					//
-					// }
+						additionalData[choice.store.global] = $input.checked;
+
+					}
+
+					return;
 
 				}
 
-				bit++;
+				if ($input.checked) {
 
-			}
+					value += Math.pow(2, i);
+
+				}
+
+			});
+
+			return value;
 
 		},
 
-		date: function(value, question, $question) {
+		// todo: every date currently has to have a global store and nothing else is supported here
+		date: function(question, $question, additionalData) {
 
-			var $$fields = $question.find('.pickadate-here');
+			var $$dates = $question.find('.pickadate-here');
 
-			var bit = 0;
-			while(Math.pow(2, bit) <= value) {
+			question.dates.forEach(function(date, i) {
 
-				var bitSet = (value >> bit) % 2 != 0;
+				var $date = $$dates[i],
+					dateObj = $($date).pickadate('picker').get('select');
 
-				if (bitSet) {
+				if (dateObj === null) {
 
-					// var dateParts = valueAdditions.shift().split('-');
-					//
-					// dateParts[1]--; // month is zero based
-					//
-					// $($$fields[bit]).pickadate('picker').set('select', dateParts);
+					additionalData[date.store.global] = null;
+
+					return;
 
 				}
 
-				bit++;
+				additionalData[date.store.global] = [dateObj.year].concat([dateObj.month + 1, dateObj.date].map(function(num) { return num < 10 ? '0' + num : num; })).join('-');
 
-			}
+			});
+
+			return null;
+
+		},
+
+		// todo: each multiselect currently has to have a global store and nothing else is supported here
+		multiselect: function(question, $question, additionalData) {
+
+			return $question.find('.mdc-select').get().map(function($el) { return $el.value; }).filter(function(v, i, a) { return !!v && a.indexOf(v) === i; });
 
 		}
 
-	}
+	};
 
 	var snackbar = document.querySelector('#toast-container').MDCSnackbar;
 	function toast(text) {
@@ -599,84 +580,143 @@ $(function() {
 
 	}
 
-	function encodeResult() {
+	function pickadateValidate(that, ctx, isOnSet) {
 
-		var results = [];
+		var $field = that.$node.parent('.mdc-textfield'),
+			$error = $field.next('.mdc-textfield-helptext'),
+			idx = $field.parents('section[id^="question-"]').data('idx'),
+			question = questions[idx],
+			$question = $$questions[idx];
 
-		questions.forEach(function(question, i) {
+		if (isOnSet && 'clear' in ctx) {
 
-			var $question = $$questions[i];
+			that.close();
 
-			var result = encode[question.type](question, $question);
+			$field.find('.mdc-textfield__label').removeClass('mdc-textfield__label--float-above');
 
-			if (results.length > 0) {
+			$field.addClass('mdc-textfield--invalid');
 
-				var lastResult = results[results.length - 1],
-					lastValue,
-					lastMultiplier;
+			$error.addClass('mdc-textfield-helptext--persistent');
 
-				if (lastResult.indexOf(':') === -1) {
+			$error.text('You have to select a date');
 
-					lastValue = lastResult;
-					lastMultiplier = 1;
+		}
+		else {
 
-				}
-				else {
+			$field.find('.mdc-textfield__label').addClass('mdc-textfield__label--float-above');
 
-					var lastIndex = lastResult.lastIndexOf(':');
+			var valid = validate[question.type](question, $question);
 
-					lastValue = lastResult.substr(0, lastIndex);
-					lastMultiplier = parseInt(lastResult.substr(lastIndex + 1));
+			if (valid.bool === false) {
 
-				}
+				var _idx = $field.data('idx');
 
-				if (lastValue === result) {
+				if (_idx in valid.reasons) {
 
-					results[results.length - 1] = lastValue + ':' + (lastMultiplier + 1);
+					var reason = valid.reasons[_idx];
 
-					return;
+					$field.addClass('mdc-textfield--invalid');
+
+					$error.addClass('mdc-textfield-helptext--persistent');
+
+					$error.text(reason);
 
 				}
 
 			}
+			else {
 
-			if (result === lastResult) {
-
-				var multiplier = lastResult.indexOf(':') === -1 ? 0 : parseInt(lastResult.replace(/^.*:(\d+)$/, '$1'));
-
-				results[results.length - 1] = results[results.length - 1].replace(/^.*:(\d+)$/, multiplier + 1);
+				$field.removeClass('mdc-textfield--invalid');
+				$error.removeClass('mdc-textfield-helptext--persistent').html('&nbsp;');
 
 			}
 
-			results[results.length] = result;
-
-		});
-
-		return results.join('-');
+		}
 
 	}
 
-	window.decodeResult = decodeResult; // todo remove
-	function decodeResult(result) {
+	function animateSliderHeight(oldHeight, newHeight) {
 
-		var decodedResult = result.replace(/([^-]+):(\d)/g, function(match, br1, br2) {
+		if (oldHeight === newHeight) {
 
-				var repeated = ((br1 + '-').repeat(br2));
+			return;
 
-				return repeated.substr(0, repeated.length - 1);
+		}
 
-		}).split('-').map(atob);
+		var $nonjquery = $slider[0];
 
-		decodedResult.forEach(function(code, i) {
+		if ('animate' in $nonjquery && typeof $nonjquery.animate === 'function') {
 
-			var question = questions[i],
-				$question = $$questions[i];
+			var anim = $nonjquery.animate([
+				{ height: oldHeight + 'px' },
+				{ height: newHeight + 'px' }
+			], {
+				duration: 500,
+				delay: 500,
+				easing: 'cubic-bezier(0, 0, .2, 1)'
+			});
 
-			var codeParts = code.split(':');
+			anim.onfinish = function() {
 
-			recover[question.type](parseInt(codeParts[0]), question, $question);
+				$nonjquery.style.height = newHeight + 'px';
 
-		});
+			};
+
+		}
+		else {
+
+			$slider.stop().delay(500).animate({height: newHeight}, 500);
+
+		}
+
+	}
+
+	function finished() {
+
+		document.body.classList.add('finished');
+
+		var i = questions.length - 1,
+			question = questions[i];
+
+		while (question.backto === undefined) {
+
+			i--;
+			question = questions[i];
+
+		}
+
+		var $question = $$questions[i],
+			identifierData = new Array(questions.length),
+			additionalData = {};
+
+		while (question || i === 0) {
+
+			var r = getSelection[question.type](question, $question, additionalData);
+
+			if ('store' in question) {
+
+				if ('global' in question.store) {
+
+					additionalData[question.store.global] = r;
+
+				}
+
+			}
+			else if (r !== null) {
+
+				identifierData[i] = r;
+
+			}
+
+			i = question.backto;
+			question = questions[i];
+			$question = $$questions[i];
+
+		}
+
+		console.log(identifierData, additionalData);
+
+		$('#rights-profile-code').text('todo');
 
 	}
 

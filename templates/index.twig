@@ -82,6 +82,7 @@
 																	<div class="mdc-radio__inner-circle"></div>
 																</div>
 															</div>
+
 															<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
 														</div>
 
@@ -131,16 +132,42 @@
 
 												<div class="date-aligner">
 
-													<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
-														<input type="text" id="question-{{ idx }}-{{ _idx }}" class="mdc-textfield__input pickadate-here">
-														<label class="mdc-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ date.name }}</label>
-														<div class="mdc-textfield__bottom-line"></div>
+													<div>
+														<div class="mdc-textfield" data-idx="{{ _idx }}" aria-controls="help-{{ idx }}-{{ _idx }}" data-mdc-auto-init="MDCTextfield">
+															<input type="text" id="question-{{ idx }}-{{ _idx }}" class="mdc-textfield__input pickadate-here">
+															<label class="mdc-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ date.name }}</label>
+															<div class="mdc-textfield__bottom-line"></div>
+														</div>
+
+														<label id="help-{{ idx }}-{{ _idx }}" class="mdc-textfield-helptext mdc-textfield-helptext--validation-msg" aria-hidden="true">&nbsp;</label>
 													</div>
 													<button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Select</button>
 
 												</div>
 
 											{% endfor %}
+
+										{% endif %}
+
+										{% if question.type == 'multiselect' %}
+
+											<select class="mdc-select">
+
+												<option value="" default selected>Select a country</option>
+
+												{% for name, code in question.choices %}
+
+													<option value="{{ code }}">
+														{{ name }}
+													</option>
+
+												{% endfor %}
+
+											</select>
+
+											<br>
+
+											<button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Add</button>
 
 										{% endif %}
 

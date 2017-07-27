@@ -6,12 +6,16 @@ html {
 	overflow: hidden;
 }
 
+body {
+	font-size: 12px;
+}
+
 body > .wrap {
 	display: flex;
 	flex-direction: column;
 	height: 300%;
 	transform: translate3d(0, 0, 0);
-	transition: transform 1s ease;
+	transition: transform 1s cubic-bezier(0, 0, .2, 1);
 	will-change: transform;
 }
 
@@ -31,17 +35,21 @@ body.started.finished #result {
 	opacity: 1;
 }
 
+#questions {
+	padding: 1rem;
+	box-sizing: border-box;
+}
+
 #questions,
 #result {
 	opacity: 0;
-	transition: opacity 1s ease-out;
+	transition: opacity 1s cubic-bezier(0, 0, .2, 1);
 	will-change: opacity;
 }
 
 #introduction,
 #questions,
 #result {
-	position: relative;
 	height: 100%;
 	width: 100%;
 	display: flex;
@@ -57,24 +65,20 @@ body.started.finished #result {
 #questions > .mdc-card {
 	width: 100%;
 	max-height: 100%;
-	margin: 2em;
 }
 
 #questions-slider {
-	position: relative;
 	overflow: hidden;
-	transition: height .5s ease .5s;
 	will-change: height;
 	display: flex;
 }
 
 #questions-slider > .container {
-	position: relative;
 	width: 100000%;
 	display: flex;
 	align-items: flex-start;
 	transform: translate3d(0, 0, 0);
-	transition: transform .5s ease;
+	transition: transform .5s cubic-bezier(0, 0, .2, 1);
 	will-change: transform;
 	flex-shrink: 0;
 	background: #fff;
@@ -94,6 +98,20 @@ body.started.finished #result {
 	flex-direction: column;
 }
 
+#questions-slider > .container > section.multiselect select {
+	margin-bottom: 12px;
+}
+
+#questions-slider > .container > section h3 {
+	padding-bottom: .75rem;
+	position: relative;
+	margin: 1rem 0;
+}
+
+.mdc-card__primary h1 {
+	padding: 0;
+}
+
 .mdc-card__media {
 	padding: 0;
 	flex-shrink: 0;
@@ -106,40 +124,57 @@ body.started.finished #result {
 .date-aligner {
 	display: flex;
 	align-items: flex-end;
-	margin: 12px 0;
+	margin: 12px 0 0 0;
 }
 
-.date-aligner .mdc-textfield {
-	margin-top: 0 !important;
+.date-aligner div {
+	display: flex;
+	flex-direction: column;
+}
+
+.date-aligner div .mdc-textfield + .mdc-textfield-helptext {
 	margin-bottom: 0;
 }
 
+.date-aligner div .mdc-textfield {
+	margin-top: 0 !important;
+	flex-direction: row;
+}
+
 .date-aligner button {
+	margin-bottom: 8px;
+	position: relative;
+	top: -0.75rem;
 	margin-left: .5rem;
 }
 
 .mdc-form-field > .mdc-checkbox ,
 .mdc-form-field > .mdc-radio {
-	top: -5px;
+	top: -.375rem;
 }
 
 .mdc-form-field > .mdc-checkbox + label,
 .mdc-form-field > .mdc-radio + label {
 	position: relative;
-	padding-bottom: 10px;
+	padding-bottom: .75rem;
 }
 
 .mdc-form-field > .mdc-checkbox.invalid + label:after,
-.mdc-form-field > .mdc-radio.invalid + label:after {
+.mdc-form-field > .mdc-radio.invalid + label:after,
+section h3.error:after {
 	content: attr(data-error);
 	position: absolute;
 	left: 0;
 	bottom: 0;
 	padding-left: 4px;
-	font-size: 10px;
+	font-size: .75rem;
 	white-space: nowrap;
 	line-height: 1;
 	color: #d50000;
+}
+
+section h3.error:after {
+	padding-left: 0;
 }
 
 .card-content {
@@ -185,6 +220,14 @@ section .choices {
 }
 
 @media screen and (min-width: 1024px) {
+
+	body {
+		font-size: 16px;
+	}
+
+	#questions {
+		padding: 4rem;
+	}
 
 	#questions > .mdc-card {
 		width: 40vw;
