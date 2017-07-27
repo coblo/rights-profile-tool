@@ -460,45 +460,12 @@ $(function() {
 
 	};
 
-	var getSelection = {
+	var makeSchema = {
 
-		radio: function(question, $question, additionalData) {
+		// no store for the question BUT set for the choices
+		radio: function(question, $question, identifierData) {
 
-			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]'),
-				value = null;
-
-			question.choices.forEach(function(choice, i) {
-
-				var $input = $$inputs[i];
-
-				if ('store' in choice) {
-
-					if ('global' in choice.store) {
-
-						additionalData[choice.store.global] = $input.checked;
-
-					}
-
-					return;
-
-				}
-
-				if ($input.checked) {
-
-					value = Math.pow(2, i);
-
-				}
-
-			});
-
-			return value;
-
-		},
-
-		checkbox: function(question, $question, additionalData) {
-
-			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]'),
-				value = 0;
+			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]');
 
 			question.choices.forEach(function(choice, i) {
 
@@ -506,58 +473,101 @@ $(function() {
 
 				if ('store' in choice) {
 
-					if ('global' in choice.store) {
-
-						additionalData[choice.store.global] = $input.checked;
-
-					}
-
-					return;
+					identifierData[choice.store] = $input.checked;
 
 				}
 
-				if ($input.checked) {
+				if ($input.checked && typeof choice.set === 'object') {
 
-					value += Math.pow(2, i);
+					for (var prop in choice.set) {
+
+						identifierData[prop] = choice.set[prop];
+
+					}
 
 				}
 
 			});
 
-			return value;
+		},
+
+		// store for the question OR set for choices
+		checkbox: function(question, $question, identifierData) {
+
+			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]'),
+				values = [];
+
+			question.choices.forEach(function(choice, i) {
+
+				var $input = $$inputs[i];
+
+				if ($input.checked) {
+
+					if (typeof choice.set === 'object') {
+
+						for (var prop in choice.set) {
+
+							identifierData[prop] = choice.set[prop];
+
+						}
+
+					}
+
+					values[values.length] = choice.value;
+
+				}
+
+			});
+
+			if ('store' in question) {
+
+				identifierData[question.store] = {};
+
+				values.forEach(function(value) {
+
+					identifierData[question.store][value] = true;
+
+				});
+
+			}
 
 		},
 
-		// todo: every date currently has to have a global store and nothing else is supported here
-		date: function(question, $question, additionalData) {
+		// store for the question BUT NOTHING for the choices
+		date: function(question, $question, identifierData) {
+
+			identifierData[question.store] = {};
 
 			var $$dates = $question.find('.pickadate-here');
 
 			question.dates.forEach(function(date, i) {
 
 				var $date = $$dates[i],
-					dateObj = $($date).pickadate('picker').get('select');
+					dateObj = $($date).pickadate('picker').get('select'),
+					value = null;
 
-				if (dateObj === null) {
+				if (dateObj !== null) {
 
-					additionalData[date.store.global] = null;
-
-					return;
+					value = [dateObj.year].concat([dateObj.month + 1, dateObj.date].map(function(num) { return num < 10 ? '0' + num : num; })).join('-');
 
 				}
 
-				additionalData[date.store.global] = [dateObj.year].concat([dateObj.month + 1, dateObj.date].map(function(num) { return num < 10 ? '0' + num : num; })).join('-');
+				identifierData[question.store][date.value] = value;
 
 			});
 
-			return null;
-
 		},
 
-		// todo: each multiselect currently has to have a global store and nothing else is supported here
-		multiselect: function(question, $question, additionalData) {
+		// store for the question BUT NOTHING for the choices
+		multiselect: function(question, $question, identifierData) {
 
-			return $question.find('.mdc-select').get().map(function($el) { return $el.value; }).filter(function(v, i, a) { return !!v && a.indexOf(v) === i; });
+			identifierData[question.store] = {};
+
+			$question.find('.mdc-select').get().map(function($el) { return $el.value; }).filter(function(v, i, a) { return !!v && a.indexOf(v) === i; }).forEach(function(countryCode) {
+
+				identifierData[question.store][countryCode] = true;
+
+			});
 
 		}
 
@@ -691,27 +701,11 @@ $(function() {
 		}
 
 		var $question = $$questions[i],
-			identifierData = new Array(questions.length),
-			additionalData = {};
+			identifierData = {};
 
 		while (question || i === 0) {
 
-			var r = getSelection[question.type](question, $question, additionalData);
-
-			if ('store' in question) {
-
-				if ('global' in question.store) {
-
-					additionalData[question.store.global] = r;
-
-				}
-
-			}
-			else if (r !== null) {
-
-				identifierData[i] = r;
-
-			}
+			makeSchema[question.type](question, $question, identifierData);
 
 			i = question.backto;
 			question = questions[i];
@@ -719,7 +713,7 @@ $(function() {
 
 		}
 
-		console.log(identifierData, additionalData);
+		console.log(identifierData, JSON.stringify(identifierData, null, 2));
 
 		$('#rights-profile-code').text('todo');
 

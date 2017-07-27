@@ -13,10 +13,16 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'name' => 'Original Creator'
+				'name' => 'Original Creator',
+				'set' => [
+					'originalCreator' => true
+				]
 			],
 			[
-				'name' => 'Publisher / Exploiter'
+				'name' => 'Publisher / Exploiter',
+				'set' => [
+					'publisherExploiter' => true
+				]
 			]
 		],
 		'goto' => 1
@@ -30,11 +36,17 @@ $questions = [
 		'choices' => [
 			[
 				'name' => 'Temporarily unrestricted',
-				'goto' => 3
+				'goto' => 3,
+				'set' => [
+					'temporarilyRestricted' => false
+				]
 			],
 			[
 				'name' => 'Temporarily Restricted',
-				'goto' => 2
+				'goto' => 2,
+				'set' => [
+					'temporarilyRestricted' => true
+				]
 			]
 		],
 		'goto' => null
@@ -47,21 +59,15 @@ $questions = [
 		'dates' => [
 			[
 				'name' => 'Date from',
-				'store' => [
-					'global' => 'validFrom'
-				]
+				'value' => 'from'
 			],
 			[
 				'required' => true,
 				'name' => 'Date to',
-				'store' => [
-					'global' => 'validTo'
-				]
+				'value' => 'to'
 			]
 		],
-		'store' => [
-			'none' => true
-		],
+		'store' => '_temporarilyRestricted__selected',
 		'goto' => 3
 	],
 	3 => [
@@ -73,11 +79,17 @@ $questions = [
 		'choices' => [
 			[
 				'name' => 'Territorially unrestricted',
-				'goto' => 5
+				'goto' => 5,
+				'set' => [
+					'territoriallyRestricted' => false
+				]
 			],
 			[
 				'name' => 'Territorially Restricted',
-				'goto' => 4
+				'goto' => 4,
+				'set' => [
+					'territoriallyRestricted' => true
+				]
 			]
 		],
 		'goto' => null
@@ -89,9 +101,7 @@ $questions = [
 		'text' => 'todo: add text',
 		'question' => 'todo: add question',
 		'choices' => $countries,
-		'store' => [
-			'global' => 'countries'
-		],
+		'store' => '_territoriallyRestricted__selected',
 		'goto' => 5
 	],
 	5 => [
@@ -103,18 +113,22 @@ $questions = [
 		'choices' => [
 			[
 				'name' => 'All Rights',
-				'goto' => 12
+				'goto' => 12,
+				'set' => [
+					'usageRightsRestricted' => false
+				]
 			],
 			[
 				'name' => 'Some Rights',
-				'goto' => 6
+				'goto' => 6,
+				'set' => [
+					'usageRightsRestricted' => true
+				]
 			],
 			[
 				'type' => 'checkbox',
 				'name' => 'Exclusive',
-				'store' => [
-					'global' => 'exclusive'
-				]
+				'store' => 'exclusiveRights'
 			]
 		],
 		'goto' => null
@@ -128,11 +142,17 @@ $questions = [
 		'choices' => [
 			[
 				'name' => 'None',
-				'goto' => 8
+				'goto' => 8,
+				'set' => [
+					'privateUsageRights' => false
+				]
 			],
 			[
 				'name' => 'Some Rights',
-				'goto' => 7
+				'goto' => 7,
+				'set' => [
+					'privateUsageRights' => true
+				]
 			]
 		],
 		'goto' => null
@@ -145,24 +165,29 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'name' => 'Reproduce'
+				'name' => 'Reproduce',
+				'value' => 'reproduce'
 			],
 			[
 				'name' => 'Social Sharing (incl. Reproduce)',
+				'value' => 'socialSharing',
 				'requirement' => [
 					'checked' => ['7-0']
-				]
+				],
 			],
 			[
 				'name' => 'Derive (incl. Reproduce)',
+				'value' => 'derive',
 				'requirement' => [
 					'checked' => ['7-0']
 				]
 			],
 			[
-				'name' => 'Resale'
+				'name' => 'Resale',
+				'value' => 'resale'
 			]
 		],
+		'store' => 'privateUsageRights__selected',
 		'goto' => 8
 	],
 	8 => [
@@ -174,11 +199,17 @@ $questions = [
 		'choices' => [
 			[
 				'name' => 'None',
-				'goto' => 10
+				'goto' => 10,
+				'set' => [
+					'commercialInstitutionalRights' => false
+				]
 			],
 			[
 				'name' => 'Some Rights',
-				'goto' => 9
+				'goto' => 9,
+				'set' => [
+					'commercialInstitutionalRights' => true
+				]
 			]
 		],
 		'goto' => null
@@ -191,30 +222,39 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'name' => 'Reproduce'
+				'name' => 'Reproduce',
+				'value' => 'reproduce'
 			],
 			[
-				'name' => 'Distribute physical copy'
+				'name' => 'Distribute physical copy',
+				'value' => 'distributePhysicalCopy'
 			],
 			[
-				'name' => 'Make available for streaming'
+				'name' => 'Make available for streaming',
+				'value' => 'availableForStreaming'
 			],
 			[
-				'name' => 'Make available for downloading'
+				'name' => 'Make available for downloading',
+				'value' => 'availableForDownloading'
 			],
 			[
-				'name' => 'Lease'
+				'name' => 'Lease',
+				'value' => 'lease'
 			],
 			[
-				'name' => 'Lend'
+				'name' => 'Lend',
+				'value' => 'lend'
 			],
 			[
-				'name' => 'Advertise'
+				'name' => 'Advertise',
+				'value' => 'advertise'
 			],
 			[
-				'name' => 'Derive'
+				'name' => 'Derive',
+				'value' => 'derive'
 			]
 		],
+		'store' => 'commercialInstitutionalRights__selected',
 		'goto' => 10
 	],
 	10 => [
@@ -225,10 +265,18 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'name' => 'Specific User Group'
+				'name' => 'Specific User Group',
+				'value' => 'specificUserGroup',
+				'set' => [
+					'specificUserGroup' => true
+				]
 			],
 			[
-				'name' => 'General Public'
+				'name' => 'General Public',
+				'value' => 'generalPublic',
+				'set' => [
+					'generalPublic' => true
+				]
 			]
 		],
 		'goto' => 11
@@ -241,10 +289,18 @@ $questions = [
 		'question' => 'todo: add question',
 		'choices' => [
 			[
-				'name' => 'Sublicense'
+				'name' => 'Sublicense',
+				'value' => 'sublicense',
+				'set' => [
+					'sublicense' => true
+				]
 			],
 			[
-				'name' => 'Assign'
+				'name' => 'Assign',
+				'value' => 'assign',
+				'set' => [
+					'assign' => true
+				]
 			]
 		],
 		'goto' => 12
