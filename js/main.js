@@ -134,18 +134,13 @@ $(function() {
 
 					$errors[_idx].innerText = reason;
 
-					toast(reason);
-
 				}
 
 			}
-			else {
 
-				$question.find('h3').addClass('error').attr('data-error', valid.reason);
+			$question.find('h3').addClass('error').attr('data-error', valid.reason);
 
-				toast(valid.reason);
-
-			}
+			toast(valid.reason);
 
 		}
 		else {
@@ -222,7 +217,7 @@ $(function() {
 
 					return {
 						bool: false,
-						reason: 'You have to check one option to proceed'
+						reason: 'One option is required to proceed'
 					};
 
 				}
@@ -257,7 +252,7 @@ $(function() {
 
 					return {
 						bool: false,
-						reason: 'You have to check at least one option to proceed'
+						reason: 'At least one option is required to proceed'
 					};
 
 				}
@@ -308,7 +303,7 @@ $(function() {
 
 							return {
 								bool: false,
-								reason: 'You need to check the option "' + question.choices[i].name + '"'
+								reason: 'The option "' + question.choices[i].name + '" is required due to your selection'
 							};
 
 						}
@@ -324,6 +319,7 @@ $(function() {
 
 			}
 
+			// this is currently not in use
 			if (question.validation && question.validation.length) {
 
 				for (var i = 0, len = question.validation.length, type; type = question.validation[i], i < len; i = i + 1) {
@@ -413,7 +409,7 @@ $(function() {
 
 					if (dateObj === null) {
 
-						reasons[i] = 'You have to select a date';
+						reasons[i] = 'This date is required';
 
 					}
 
@@ -425,7 +421,8 @@ $(function() {
 
 				return {
 					bool: false,
-					reasons: reasons
+					reasons: reasons,
+					reason: 'At least one date is required'
 				};
 
 			}
@@ -447,7 +444,7 @@ $(function() {
 
 					return {
 						bool: false,
-						reason: 'You have to select at least one option to proceed'
+						reason: 'At least one option is required to proceed'
 					};
 
 				}
@@ -594,16 +591,24 @@ $(function() {
 
 			$field.find('.mdc-textfield__label').removeClass('mdc-textfield__label--float-above');
 
-			$field.addClass('mdc-textfield--invalid');
+			if (question.dates[$field.data('idx')].required) {
 
-			$error.addClass('mdc-textfield-helptext--persistent');
+				$field.addClass('mdc-textfield--invalid');
 
-			$error.text('You have to select a date');
+				$error.addClass('mdc-textfield-helptext--persistent');
+
+				$error.text('This date is required to proceed');
+
+			}
 
 		}
 		else {
 
-			$field.find('.mdc-textfield__label').addClass('mdc-textfield__label--float-above');
+			if (that.$node.val()) {
+
+				$field.find('.mdc-textfield__label').addClass('mdc-textfield__label--float-above');
+
+			}
 
 			var valid = validate[question.type](question, $question);
 

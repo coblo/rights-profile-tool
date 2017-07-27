@@ -138,6 +138,7 @@ body.started.finished #result {
 
 .date-aligner div .mdc-textfield {
 	margin-top: 0 !important;
+	margin-bottom: 2px;
 	flex-direction: row;
 }
 
@@ -175,6 +176,8 @@ section h3.error:after {
 
 section h3.error:after {
 	padding-left: 0;
+	font-weight: 400;
+	letter-spacing: 0.04em;
 }
 
 .card-content {
