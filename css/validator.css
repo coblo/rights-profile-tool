@@ -1,0 +1,18 @@
+body,
+html {
+	height: 100%;
+	margin: 0;
+	background: #efefef;
+}
+
+body {
+	font-size: 12px;
+}
+
+@media screen and (min-width: 1024px) {
+
+	body {
+		font-size: 16px;
+	}
+
+}
