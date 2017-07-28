@@ -119,7 +119,7 @@ $(function() {
 
 		if (valid.bool === false) {
 
-			if (question.type === 'date') {
+			if (question.type === 'date' && valid.reasons) {
 
 				var $fields = $question.find('.mdc-textfield'),
 					$errors = $question.find('.mdc-textfield-helptext');
@@ -133,6 +133,22 @@ $(function() {
 					$errors[_idx].classList.add('mdc-textfield-helptext--persistent');
 
 					$errors[_idx].innerText = reason;
+
+				}
+
+			}
+			else if (question.type === 'radio' && valid.reasons) {
+
+				var $$fields = $question.find('input[type="radio"]');
+
+				for (var _idx in valid.reasons) {
+
+					var reason = valid.reasons[_idx],
+						$parent = $($$fields[_idx]).parent('.mdc-radio');
+
+					$parent.addClass('invalid');
+
+					$parent.find('+ label').attr('data-error', reason);
 
 				}
 
@@ -219,6 +235,36 @@ $(function() {
 						bool: false,
 						reason: 'One option is required to proceed'
 					};
+
+				}
+
+			}
+
+			// todo support multiple
+			var choice = question.choices[$checked.val()];
+			if ('requirement' in choice) {
+
+				if ('notChecked' in choice.requirement) {
+
+					var trash = choice.requirement.notChecked.split('-'),
+						idx = parseInt(trash[0]),
+						i = parseInt(trash[1]);
+
+					var $target = $('#question-' + idx + '-' + i);
+
+					if ($target.is(':checked')) {
+
+						var reasons = {};
+						reasons[i] = choice.customError.option;
+
+						// todo also add default message
+						return {
+							bool: false,
+							reason: choice.customError.general,
+							reasons: reasons
+						};
+
+					}
 
 				}
 
@@ -773,6 +819,47 @@ $(function() {
 			i = question.backto;
 			question = questions[i];
 			$question = $$questions[i];
+
+		}
+
+		// check if all rights are checked but the user said some rights and repair it
+		if (data.rightsProfile.usageRightsRestricted === true) {
+
+			var everyRightSelected = ['privateUsageRights__selected', 'commercialInstitutionalRights__selected'].map(function(property) {
+
+				var exists = property in data.rightsProfile;
+
+				if (!exists) {
+
+					return false;
+
+				}
+
+				for (var right in data.rightsProfile[property]) {
+
+					if (data.rightsProfile[property][right] === false) {
+
+						return false;
+
+					}
+
+				}
+
+				return true;
+
+			});
+
+			if (everyRightSelected[0] === true && everyRightSelected[1] === true) {
+
+				data.rightsProfile.usageRightsRestricted = false;
+
+				delete data.rightsProfile.privateUsageRights;
+				delete data.rightsProfile.commercialInstitutionalRights;
+
+				delete data.rightsProfile.privateUsageRights__selected;
+				delete data.rightsProfile.commercialInstitutionalRights__selected;
+
+			}
 
 		}
 
