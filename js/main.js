@@ -866,7 +866,7 @@ $(function() {
 		console.log(data);
 		console.log(JSON.stringify(data, null, 2));
 
-		$('#rights-profile-code').text('todo');
+		$('#rights-profile-code').html(JSON.stringify(data.rightsProfile, null, 2).replace(/\n/g, '<br>'));
 
 	}
 
