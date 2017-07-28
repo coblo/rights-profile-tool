@@ -66,7 +66,10 @@ $questions = [
 			[
 				'required' => true,
 				'name' => 'Date to',
-				'value' => 'to'
+				'value' => 'to',
+				'requirement' => [
+					'gt' => ['2-0']
+				],
 			]
 		],
 		'storeIn' => 'smartLicense',

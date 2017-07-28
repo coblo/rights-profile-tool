@@ -398,7 +398,8 @@ $(function() {
 
 		date: function(question, $question) {
 
-			var $$fields = $question.find('.pickadate-here'),
+			var idx = $question.data('idx'),
+				$$fields = $question.find('.pickadate-here'),
 				reasons = {};
 
 			question.dates.forEach(function(date, i) {
@@ -409,13 +410,77 @@ $(function() {
 
 					if (dateObj === null) {
 
-						reasons[i] = 'This date is required';
+						reasons[i] = 'This date is required to proceed';
 
 					}
 
 				}
 
 			});
+
+			var requirements = {};
+			question.dates.forEach(function(date, i) {
+
+				if (date.requirement) {
+
+					if (date.requirement.gt) {
+
+						requirements.gt = requirements.gt || {};
+
+						date.requirement.gt.forEach(function(idx_i) {
+
+							requirements.gt[idx + '-' + i] = idx_i;
+
+						});
+
+					}
+
+				}
+
+			});
+
+			if ('gt' in requirements) {
+
+				for (var target in requirements.gt) {
+
+					var targetTrash = target.split('-'),
+						targetIdx = parseInt(targetTrash[0]),
+						targetI = parseInt(targetTrash[1]),
+						compareTrash = requirements.gt[target].split('-'),
+						compareIdx = parseInt(compareTrash[0]),
+						compareI = parseInt(compareTrash[1]);
+
+					var $target = $('#question-' + targetIdx + '-' + targetI),
+						$compare = $('#question-' + compareIdx + '-' + compareI),
+						targetDateObj = $target.pickadate('picker').get('select'),
+						compareDateObj = $compare.pickadate('picker').get('select');
+
+					if (compareDateObj && targetDateObj && targetDateObj.pick < compareDateObj.pick) {
+
+						var reasons = {};
+						reasons[targetI] = '"' + question.dates[compareI].name + '" needs to be earlier than this';
+
+						// same page
+						if (idx === questions.indexOf(question)) {
+
+							return {
+								bool: false,
+								reasons: reasons,
+								reason: 'The selected date "' + question.dates[targetI].name + '" needs to be later than "' + question.dates[compareI].name + '"'
+							};
+
+						}
+						else {
+
+							// todo do we need this case?
+
+						}
+
+					}
+
+				}
+
+			}
 
 			if (Object.keys(reasons).length > 0) {
 
@@ -508,21 +573,21 @@ $(function() {
 
 				if ($input.checked && typeof choice.set === 'object') {
 
-						for (var prop in choice.set) {
+					for (var prop in choice.set) {
 
-							identifierData[prop] = choice.set[prop];
-
-						}
+						identifierData[prop] = choice.set[prop];
 
 					}
 
-			if ('store' in question) {
+				}
+
+				if ('store' in question) {
 
 					identifierData[question.store][choice.value] = $input.checked;
 
 				}
 
-				});
+			});
 
 		},
 
@@ -621,7 +686,7 @@ $(function() {
 
 				var _idx = $field.data('idx');
 
-				if (_idx in valid.reasons) {
+				if (valid.reasons && _idx in valid.reasons) {
 
 					var reason = valid.reasons[_idx];
 
