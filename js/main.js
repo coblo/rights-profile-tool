@@ -494,16 +494,19 @@ $(function() {
 		// store for the question OR set for choices
 		checkbox: function(question, $question, identifierData) {
 
-			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]'),
-				values = [];
+			var $$inputs = $question.find('input[type="radio"], input[type="checkbox"]');
+
+			if ('store' in question) {
+
+				identifierData[question.store] = {};
+
+			}
 
 			question.choices.forEach(function(choice, i) {
 
 				var $input = $$inputs[i];
 
-				if ($input.checked) {
-
-					if (typeof choice.set === 'object') {
+				if ($input.checked && typeof choice.set === 'object') {
 
 						for (var prop in choice.set) {
 
@@ -513,23 +516,13 @@ $(function() {
 
 					}
 
-					values[values.length] = choice.value;
+			if ('store' in question) {
+
+					identifierData[question.store][choice.value] = $input.checked;
 
 				}
 
-			});
-
-			if ('store' in question) {
-
-				identifierData[question.store] = {};
-
-				values.forEach(function(value) {
-
-					identifierData[question.store][value] = true;
-
 				});
-
-			}
 
 		},
 
@@ -543,16 +536,18 @@ $(function() {
 			question.dates.forEach(function(date, i) {
 
 				var $date = $$dates[i],
-					dateObj = $($date).pickadate('picker').get('select'),
-					value = null;
+					dateObj = $($date).pickadate('picker').get('select');
 
-				if (dateObj !== null) {
+				if (dateObj === null) {
 
-					value = [dateObj.year].concat([dateObj.month + 1, dateObj.date].map(function(num) { return num < 10 ? '0' + num : num; })).join('-');
+					identifierData[question.store][date.value] = null;
 
 				}
+				else {
 
-				identifierData[question.store][date.value] = value;
+					identifierData[question.store][date.value] = [dateObj.year].concat([dateObj.month + 1, dateObj.date].map(function(num) { return num < 10 ? '0' + num : num; })).join('-');
+
+				}
 
 			});
 
@@ -701,11 +696,14 @@ $(function() {
 		}
 
 		var $question = $$questions[i],
-			identifierData = {};
+			data = {
+				rightsProfile: {},
+				smartLicense: {}
+			};
 
 		while (question || i === 0) {
 
-			makeSchema[question.type](question, $question, identifierData);
+			makeSchema[question.type](question, $question, data[question.storeIn || 'rightsProfile']);
 
 			i = question.backto;
 			question = questions[i];
@@ -713,7 +711,8 @@ $(function() {
 
 		}
 
-		console.log(identifierData, JSON.stringify(identifierData, null, 2));
+		console.log(data);
+		console.log(JSON.stringify(data, null, 2));
 
 		$('#rights-profile-code').text('todo');
 

@@ -15,12 +15,14 @@ $questions = [
 			[
 				'name' => 'Original Creator',
 				'set' => [
-					'originalCreator' => true
+					'originalCreator' => true,
+					'publisherExploiter' => false
 				]
 			],
 			[
 				'name' => 'Publisher / Exploiter',
 				'set' => [
+					'originalCreator' => false,
 					'publisherExploiter' => true
 				]
 			]
@@ -67,7 +69,8 @@ $questions = [
 				'value' => 'to'
 			]
 		],
-		'store' => '_temporarilyRestricted__selected',
+		'storeIn' => 'smartLicense',
+		'store' => 'temporarilyRestricted__selected',
 		'goto' => 3
 	],
 	3 => [
@@ -101,7 +104,8 @@ $questions = [
 		'text' => 'todo: add text',
 		'question' => 'todo: add question',
 		'choices' => $countries,
-		'store' => '_territoriallyRestricted__selected',
+		'storeIn' => 'smartLicense',
+		'store' => 'territoriallyRestricted__selected',
 		'goto' => 5
 	],
 	5 => [
@@ -173,7 +177,7 @@ $questions = [
 				'value' => 'socialSharing',
 				'requirement' => [
 					'checked' => ['7-0']
-				],
+				]
 			],
 			[
 				'name' => 'Derive (incl. Reproduce)',
@@ -268,13 +272,15 @@ $questions = [
 				'name' => 'Specific User Group',
 				'value' => 'specificUserGroup',
 				'set' => [
-					'specificUserGroup' => true
+					'specificUserGroup' => true,
+					'generalPublic' => false
 				]
 			],
 			[
 				'name' => 'General Public',
 				'value' => 'generalPublic',
 				'set' => [
+					'specificUserGroup' => false,
 					'generalPublic' => true
 				]
 			]
@@ -292,13 +298,15 @@ $questions = [
 				'name' => 'Sublicense',
 				'value' => 'sublicense',
 				'set' => [
-					'sublicense' => true
+					'sublicense' => true,
+					'assign' => false
 				]
 			],
 			[
 				'name' => 'Assign',
 				'value' => 'assign',
 				'set' => [
+					'sublicense' => false,
 					'assign' => true
 				]
 			]
