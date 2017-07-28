@@ -3,15 +3,15 @@ deploy:
   only:
     - master
   tags:
-    - experimental
+    - blockchain-test
   variables:
-    HOST_PORT: "127.0.0.1:9002"
+    HOST_PORT: "0.0.0.0:8082"
   script:
     - docker-compose build
     - docker-compose up -d
   environment:
     name: production
-    url: https://rights-profile-tool.content-blockchain.creations.de/
+    url: https://rightsprofiledemo.content-blockchain.org/
 
 mirror:
   stage: deploy
