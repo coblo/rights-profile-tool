@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	});
 
-	var narf = new Ajv({allErrors: true});
+	var validator = new Ajv({allErrors: true});
 
 	var data = {
 		"sublicense": false,
@@ -45,10 +45,23 @@ document.addEventListener('DOMContentLoaded', function() {
 		title: 'rightsProfile',
 		type: 'object',
 		properties: {
-			sublicense: { type: 'boolean' },
-			assign: { type: 'boolean' },
-			specificUserGroup: { type: 'boolean' },
-			generalPublic: { type: 'boolean' },
+			originalCreator: { type: 'boolean' },
+			publisherExploiter: { type: 'boolean' },
+			temporarilyRestricted: { type: 'boolean' },
+			territoriallyRestricted: { type: 'boolean' },
+			usageRightsRestricted: { type: 'boolean' },
+			exclusiveRights: { type: 'boolean' },
+			privateUsageRights: {type: 'boolean'},
+			privateUsageRights__selected:{
+				properties: {
+					reproduce: { type: 'boolean'},
+					socialSharing: { type: 'boolean'},
+					derive: { type: 'boolean'},
+					resale: {type: 'boolean'}
+				},
+				required: [ 'reproduce', 'socialSharing', 'derive', 'resale' ],
+				additionalProperties: false
+			},
 			commercialInstitutionalRights: { type: 'boolean' },
 			commercialInstitutionalRights__selected: {
 				properties: {
@@ -61,31 +74,22 @@ document.addEventListener('DOMContentLoaded', function() {
 					advertise: { type: 'boolean' },
 					derive: { type: 'boolean' }
 				},
-				required: [ 'reproduce', 'distributePhysicalCopy', 'availableForStreaming', 'availableForDownloading', 'lease', 'lend', 'advertise', 'derive' ]
+				required: [ 'reproduce', 'distributePhysicalCopy', 'availableForStreaming', 'availableForDownloading', 'lease', 'lend', 'advertise', 'derive' ],
+				additionalProperties: false
 			},
-			privateUsageRights: {type: 'boolean'},
-			privateUsageRights__selected:{
-				properties: {
-					reproduce: { type: 'boolean'},
-					socialSharing: { type: 'boolean'},
-					derive: { type: 'boolean'},
-					resale: {type: 'boolean'}
-				},
-				required: [ 'reproduce', 'socialSharing', 'derive', 'resale' ]
-			},
-			usageRightsRestricted: { type: 'boolean' },
-			exclusiveRights: { type: 'boolean' },
-			territoriallyRestricted: { type: 'boolean' },
-			temporarilyRestricted: { type: 'boolean' },
-			originalCreator: { type: 'boolean' },
-			publisherExploiter: { type: 'boolean' }
+			specificUserGroup: { type: 'boolean' },
+			generalPublic: { type: 'boolean' },
+			sublicense: { type: 'boolean' },
+			assign: { type: 'boolean' }
 		},
 		required: [ 'sublicense', 'assign', 'specificUserGroup', 'generalPublic', 'commercialInstitutionalRights', 'commercialInstitutionalRights__selected', 'privateUsageRights', 'privateUsageRights__selected', 'usageRightsRestricted', 'exclusiveRights', 'territoriallyRestricted', 'temporarilyRestricted', 'originalCreator', 'publisherExploiter' ],
 		additionalProperties: false
 	};
 
-	var asd = narf.validate(schema, data);
+	validator.validate(schema, data);
 
-	console.log(narf.errors);
+	var syntacticalErrors = validator.errors;
+
+	console.log(syntacticalErrors);
 
 });
