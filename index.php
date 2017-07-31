@@ -298,7 +298,7 @@ $questions = [
 		'goto' => 11
 	],
 	11 => [
-		'name' => 'GrandUse',
+		'name' => 'Grant use',
 		'type' => 'checkbox',
 		'required' => true,
 		'text' => 'todo: add text',
