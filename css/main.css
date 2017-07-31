@@ -228,6 +228,10 @@ section .choices {
 	padding: 0 16px;
 }
 
+#rights-profile-code {
+	margin-bottom: 50px;
+}
+
 @media screen and (min-width: 1024px) {
 
 	body {

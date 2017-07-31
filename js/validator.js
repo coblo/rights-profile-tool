@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			$message.className = 'mdc-list-item correct';
 
-			$message.innerText = 'This Rights Profile Code is valid';
+			$message.innerText = 'This Rights Profile JSON is valid';
 
 			$errors.appendChild($message);
 

@@ -705,6 +705,66 @@ $(function() {
 
 	};
 
+	var decode = {
+
+		radio: function(question, $question) {
+
+			var value = 0;
+
+			$question.find('input[type="radio"]').each(function($input, i) {
+
+				if ($input.checked) {
+
+					value += Math.pow(2, i);
+
+				}
+
+			});
+
+			// workaround for the exclusive checkbox
+			var $checkboxes = $question.find('input[type="checkbox"]');
+			if ($checkboxes.length > 0) {
+
+				var checkboxValue = 0;
+
+				$question.find('input[type="checkbox"]').each(function($input, i) {
+
+					if ($input.checked) {
+
+						checkboxValue += Math.pow(2, i);
+
+					}
+
+				});
+
+				value = value + ':' + checkboxValue;
+
+			}
+
+			return value;
+
+		},
+
+		checkbox: function(question, $question) {
+
+			var value = 0;
+
+			$question.find('input[type="checkbox"]').each(function($input, i) {
+
+				if ($input.checked) {
+
+					value += Math.pow(2, i);
+
+				}
+
+			});
+
+			return value;
+
+		}
+
+	}
+
 	var snackbar = document.querySelector('#toast-container').MDCSnackbar;
 	function toast(text) {
 
@@ -945,7 +1005,56 @@ $(function() {
 		console.log(data);
 		console.log(JSON.stringify(data, null, 2));
 
-		$('#rights-profile-code').html(JSON.stringify(data.rightsProfile, null, 2).replace(/\n/g, '<br>'));
+		$('#rights-profile-json').html(JSON.stringify(data.rightsProfile, null, 2).replace(/\n/g, '<br>'));
+
+		var decoded = [];
+		questions.forEach(function(question, i) {
+
+			if (decode[question.type]) {
+
+				var result = btoa(decode[question.type](question, $('#question-' + i))).replace(/=+$/, '');
+
+				var last = decoded[decoded.length - 1];
+				if (i > 0) {
+
+					var previousValue;
+
+					if (last.lastIndexOf(':') !== -1) {
+
+						previousValue = {
+							value: last.substr(0, last.lastIndexOf(':')),
+							multiplier: parseInt(last.substr(last.lastIndexOf(':') + 1))
+						};
+
+					}
+					else {
+
+						previousValue = {
+							value: last,
+							multiplier: 1
+						};
+
+					}
+
+					if (previousValue.value === result) {
+
+						decoded[decoded.length - 1] = previousValue.value + ':' + (previousValue.multiplier + 1);
+
+						return;
+
+					}
+
+				}
+
+				decoded[decoded.length] = result;
+
+			}
+
+		});
+
+		var decodedString = decoded.join('-');
+
+		$('#rights-profile-code').text(decodedString);
 
 	}
 
