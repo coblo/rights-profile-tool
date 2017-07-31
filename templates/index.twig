@@ -19,42 +19,92 @@
 	</head>
 	<body class="mdc-typography">
 		<div class="wrap">
-			<div id="introduction">
-				Choose the rights you want to license.<br>
-				<br>
-				<button id="start" type="button" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Start</button>
-			</div>
+			<div class="inner">
 
-			<div id="questions">
-				<div class="mdc-card mdc-elevation--z2">
-					<div id="questions-slider">
-						<div class="container">
-							{% for idx, question in questions %}
+				<div id="introduction">
+					Choose the rights you want to license.<br>
+					<br>
+					<button id="start" type="button" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Start</button>
+				</div>
 
-								<section id="question-{{ idx }}" data-idx="{{ idx }}" class="{{ question.type }}{% if question.required %} required{% endif %}">
-									<div class="mdc-card__media mdc-theme--primary-bg">
-										<section class="mdc-card__primary">
-											<h1 class="mdc-card__title mdc-card__title--large">{{ question.name }}</h1>
-										</section>
-									</div>
+				<div id="questions">
+					<div class="mdc-card mdc-elevation--z2">
+						<div id="questions-slider">
+							<div class="container">
+								{% for idx, question in questions %}
 
-									<div class="card-content">
+									<section id="question-{{ idx }}" data-idx="{{ idx }}" class="{{ question.type }}{% if question.required %} required{% endif %}">
+										<div class="mdc-card__media mdc-theme--primary-bg">
+											<section class="mdc-card__primary">
+												<h1 class="mdc-card__title mdc-card__title--large">{{ question.name }}</h1>
+											</section>
+										</div>
 
-										<h3>{{ question.question }}</h3>
+										<div class="card-content">
 
-										{% if question.type == 'radio' %}
+											<h3>{{ question.question }}</h3>
 
-											<div class="choices">
+											{% if question.type == 'radio' %}
 
-												{% for _idx, choice in question.choices %}
+												<div class="choices">
 
-													{% if not loop.first %}
+													{% for _idx, choice in question.choices %}
 
-														<br>
+														{% if not loop.first %}
 
-													{% endif %}
+															<br>
 
-													{% if choice.type == 'checkbox' %}
+														{% endif %}
+
+														{% if choice.type == 'checkbox' %}
+
+															<div class="mdc-form-field">
+																<div class="mdc-checkbox">
+																	<input type="checkbox" id="question-{{ idx }}-{{ _idx }}" class="mdc-checkbox__native-control" value="{{ _idx }}">
+																	<div class="mdc-checkbox__background">
+																		<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+																			<path class="mdc-checkbox__checkmark__path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+																		</svg>
+																		<div class="mdc-checkbox__mixedmark"></div>
+																	</div>
+																</div>
+
+																<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
+															</div>
+
+														{% else %}
+
+															<div class="mdc-form-field">
+																<div class="mdc-radio">
+																	<input class="mdc-radio__native-control" type="radio" id="question-{{ idx }}-{{ _idx }}" name="question-{{ idx }}" value="{{ _idx }}">
+																	<div class="mdc-radio__background">
+																		<div class="mdc-radio__outer-circle"></div>
+																		<div class="mdc-radio__inner-circle"></div>
+																	</div>
+																</div>
+
+																<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
+															</div>
+
+														{% endif %}
+
+													{% endfor %}
+
+												</div>
+
+											{% endif %}
+
+											{% if question.type == 'checkbox' %}
+
+												<div class="choices">
+
+													{% for _idx, choice in question.choices %}
+
+														{% if not loop.first %}
+
+															<br>
+
+														{% endif %}
 
 														<div class="mdc-form-field">
 															<div class="mdc-checkbox">
@@ -70,142 +120,100 @@
 															<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
 														</div>
 
-													{% else %}
-
-														<div class="mdc-form-field">
-															<div class="mdc-radio">
-																<input class="mdc-radio__native-control" type="radio" id="question-{{ idx }}-{{ _idx }}" name="question-{{ idx }}" value="{{ _idx }}">
-																<div class="mdc-radio__background">
-																	<div class="mdc-radio__outer-circle"></div>
-																	<div class="mdc-radio__inner-circle"></div>
-																</div>
-															</div>
-
-															<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
-														</div>
-
-													{% endif %}
-
-												{% endfor %}
-
-											</div>
-
-										{% endif %}
-
-										{% if question.type == 'checkbox' %}
-
-											<div class="choices">
-
-												{% for _idx, choice in question.choices %}
-
-													{% if not loop.first %}
-
-														<br>
-
-													{% endif %}
-
-													<div class="mdc-form-field">
-														<div class="mdc-checkbox">
-															<input type="checkbox" id="question-{{ idx }}-{{ _idx }}" class="mdc-checkbox__native-control" value="{{ _idx }}">
-															<div class="mdc-checkbox__background">
-																<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-																	<path class="mdc-checkbox__checkmark__path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-																</svg>
-																<div class="mdc-checkbox__mixedmark"></div>
-															</div>
-														</div>
-
-														<label for="question-{{ idx }}-{{ _idx }}">{{ choice.name }}</label>
-													</div>
-
-												{% endfor %}
-
-											</div>
-
-										{% endif %}
-
-										{% if question.type == 'date' %}
-
-											{% for _idx, date in question.dates %}
-
-												<div class="date-aligner">
-
-													<div>
-														<div class="mdc-textfield" data-idx="{{ _idx }}" aria-controls="help-{{ idx }}-{{ _idx }}" data-mdc-auto-init="MDCTextfield">
-															<input type="text" id="question-{{ idx }}-{{ _idx }}" class="mdc-textfield__input pickadate-here">
-															<label class="mdc-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ date.name }}</label>
-															<div class="mdc-textfield__bottom-line"></div>
-														</div>
-
-														<label id="help-{{ idx }}-{{ _idx }}" class="mdc-textfield-helptext mdc-textfield-helptext--validation-msg" aria-hidden="true">&nbsp;</label>
-													</div>
-													<button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Select</button>
+													{% endfor %}
 
 												</div>
 
-											{% endfor %}
+											{% endif %}
 
-										{% endif %}
+											{% if question.type == 'date' %}
 
-										{% if question.type == 'multiselect' %}
+												{% for _idx, date in question.dates %}
 
-											<div class="row">
-												<select class="mdc-select">
+													<div class="date-aligner">
 
-													<option value="" default selected>Select a country</option>
+														<div>
+															<div class="mdc-textfield" data-idx="{{ _idx }}" aria-controls="help-{{ idx }}-{{ _idx }}" data-mdc-auto-init="MDCTextfield">
+																<input type="text" id="question-{{ idx }}-{{ _idx }}" class="mdc-textfield__input pickadate-here">
+																<label class="mdc-textfield__label" for="question-{{ idx }}-{{ _idx }}">{{ date.name }}</label>
+																<div class="mdc-textfield__bottom-line"></div>
+															</div>
 
-													{% for name, code in question.choices %}
+															<label id="help-{{ idx }}-{{ _idx }}" class="mdc-textfield-helptext mdc-textfield-helptext--validation-msg" aria-hidden="true">&nbsp;</label>
+														</div>
+														<button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Select</button>
 
-														<option value="{{ code }}">
-															{{ name }}
-														</option>
+													</div>
 
-													{% endfor %}
+												{% endfor %}
 
-												</select>
+											{% endif %}
 
-												<button class="remove mdc-button mdc-button--dense mdc-button--compact" data-mdc-auto-init="MDCRipple">Remove</button>
-											</div>
+											{% if question.type == 'multiselect' %}
 
-											<button class="add mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Add</button>
+												<div class="row">
+													<select class="mdc-select">
 
-										{% endif %}
+														<option value="" default selected>Select a country</option>
 
-									</div>
-								</section>
+														{% for name, code in question.choices %}
 
-							{% endfor %}
-						</div>
-					</div>
-					<section class="mdc-card__actions">
-						<div class="w-60">
-							Question&nbsp;<span id="page-count">1</span>&nbsp;of {{ questions|length }}
-							<div role="progressbar" class="mdc-linear-progress" id="progress" data-mdc-auto-init="MDCLinearProgress">
-								<div class="mdc-linear-progress__buffer"></div>
-								<div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
-									<span class="mdc-linear-progress__bar-inner"></span>
-								</div>
-								<div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
-									<span class="mdc-linear-progress__bar-inner"></span>
-								</div>
+															<option value="{{ code }}">
+																{{ name }}
+															</option>
+
+														{% endfor %}
+
+													</select>
+
+													<button class="remove mdc-button mdc-button--dense mdc-button--compact" data-mdc-auto-init="MDCRipple">Remove</button>
+												</div>
+
+												<button class="add mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Add</button>
+
+											{% endif %}
+
+										</div>
+									</section>
+
+								{% endfor %}
 							</div>
 						</div>
+						<section class="mdc-card__actions">
+							<div class="w-60">
+								Question&nbsp;<span id="page-count">1</span>&nbsp;of {{ questions|length }}
+								<div role="progressbar" class="mdc-linear-progress" id="progress" data-mdc-auto-init="MDCLinearProgress">
+									<div class="mdc-linear-progress__buffer"></div>
+									<div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+										<span class="mdc-linear-progress__bar-inner"></span>
+									</div>
+									<div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+										<span class="mdc-linear-progress__bar-inner"></span>
+									</div>
+								</div>
+							</div>
 
-						<div class="w-40">
-							<button class="back mdc-button mdc-button--raised mdc-button--accent" data-mdc-auto-init="MDCRipple" disabled>Back</button>
-							<button class="continue mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Continue</button>
-						</div>
-					</section>
+							<div class="w-40">
+								<button class="back mdc-button mdc-button--raised mdc-button--accent" data-mdc-auto-init="MDCRipple" disabled>Back</button>
+								<button class="continue mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Continue</button>
+							</div>
+						</section>
+					</div>
 				</div>
+
+				<div id="result">
+					<h2>Your Rights Profile Code is:</h2>
+					<div id="rights-profile-code"></div>
+
+					<h2>Represented through following JSON:</h2>
+					<pre id="rights-profile-json"></pre>
+				</div>
+
 			</div>
 
-			<div id="result">
-				<h2>Your Rights Profile Code is:</h2>
-				<div id="rights-profile-code"></div>
-
-				<h2>Represented through following JSON:</h2>
-				<pre id="rights-profile-json"></pre>
-			</div>
+			<footer class="mdc-theme--background">
+				<a href="validator.php">Rights Profile Validator</a>
+			</footer>
 		</div>
 
 		<div id="toast-container" class="mdc-snackbar" aria-live="assertive" aria-atomic="true" aria-hidden="true" data-mdc-auto-init="MDCSnackbar">
