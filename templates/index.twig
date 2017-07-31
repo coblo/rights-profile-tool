@@ -151,23 +151,25 @@
 
 										{% if question.type == 'multiselect' %}
 
-											<select class="mdc-select">
+											<div class="row">
+												<select class="mdc-select">
 
-												<option value="" default selected>Select a country</option>
+													<option value="" default selected>Select a country</option>
 
-												{% for name, code in question.choices %}
+													{% for name, code in question.choices %}
 
-													<option value="{{ code }}">
-														{{ name }}
-													</option>
+														<option value="{{ code }}">
+															{{ name }}
+														</option>
 
-												{% endfor %}
+													{% endfor %}
 
-											</select>
+												</select>
 
-											<br>
+												<button class="remove mdc-button mdc-button--dense mdc-button--compact" data-mdc-auto-init="MDCRipple">Remove</button>
+											</div>
 
-											<button class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Add</button>
+											<button class="add mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Add</button>
 
 										{% endif %}
 

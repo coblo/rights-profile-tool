@@ -54,18 +54,44 @@ $(function() {
 
 	});
 
-	$('section.multiselect button').on('click', function() {
+	$('section.multiselect').on('click', 'button.add', function() {
 
 		var $this = $(this),
 			$question = $this.parents('section.multiselect'),
-			$lastSelect = $question.find('select:last-of-type'),
-			$clonedSelect = $lastSelect.clone(true);
+			$lastRow = $question.find('.row:last-of-type'),
+			$clonedRow = $lastRow.clone(true);
 
-		$clonedSelect.find('option[default]').attr('selected', true);
+		$clonedRow.find('option[default]').attr('selected', true);
 
-		$clonedSelect.insertAfter($lastSelect);
+		$clonedRow.insertAfter($lastRow);
 
-		sliderHeight += $clonedSelect.outerHeight(true);
+		mdc.ripple.MDCRipple.attachTo($clonedRow.find('button.remove')[0]);
+
+		sliderHeight += $clonedRow.outerHeight(true);
+
+		scrollHeights[$question.data('idx')] = sliderHeight;
+
+		$slider.css('height', sliderHeight);
+
+	});
+
+	$('section.multiselect').on('click', 'button.remove', function() {
+
+		var $this = $(this),
+			$question = $this.parents('section.multiselect'),
+			$row = $this.parent('.row');
+
+		if ($question.find('.row').length === 1) {
+
+			toast('You can\'t remove the last row!');
+
+			return;
+
+		}
+
+		sliderHeight -= $row.outerHeight(true);
+
+		$row.remove();
 
 		scrollHeights[$question.data('idx')] = sliderHeight;
 

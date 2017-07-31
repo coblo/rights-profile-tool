@@ -98,8 +98,14 @@ body.started.finished #result {
 	flex-direction: column;
 }
 
-#questions-slider > .container > section.multiselect select {
+#questions-slider > .container > section.multiselect .row {
 	margin-bottom: 12px;
+	display: flex;
+	align-items: center;
+}
+
+#questions-slider > .container > section.multiselect .row button.remove {
+	margin-left: .5rem;
 }
 
 #questions-slider > .container > section h3 {
