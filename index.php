@@ -9,8 +9,7 @@ $questions = [
 		'name' => 'Licensor',
 		'type' => 'radio',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'What type of rights owner are you?',
 		'choices' => [
 			[
 				'name' => 'Original Creator',
@@ -33,18 +32,17 @@ $questions = [
 		'name' => 'License Term',
 		'type' => 'radio',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Do you want to restrict the duration of your license?',
 		'choices' => [
 			[
-				'name' => 'Temporarily unrestricted',
+				'name' => 'No',
 				'goto' => 3,
 				'set' => [
 					'temporarilyRestricted' => false
 				]
 			],
 			[
-				'name' => 'Temporarily Restricted',
+				'name' => 'Yes',
 				'goto' => 2,
 				'set' => [
 					'temporarilyRestricted' => true
@@ -56,8 +54,7 @@ $questions = [
 	2 => [
 		'name' => 'Temporarily Restricted',
 		'type' => 'date',
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Select the period for your license.',
 		'dates' => [
 			[
 				'name' => 'Date from',
@@ -80,18 +77,17 @@ $questions = [
 		'name' => 'Territory',
 		'type' => 'radio',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Do you want to restrict the territorial range of your license?',
 		'choices' => [
 			[
-				'name' => 'Territorially unrestricted',
+				'name' => 'No',
 				'goto' => 5,
 				'set' => [
 					'territoriallyRestricted' => false
 				]
 			],
 			[
-				'name' => 'Territorially Restricted',
+				'name' => 'Yes',
 				'goto' => 4,
 				'set' => [
 					'territoriallyRestricted' => true
@@ -104,8 +100,8 @@ $questions = [
 		'name' => 'Territorially Restricted',
 		'type' => 'multiselect',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'text' => null,
+		'question' => 'Please select the territories for your license.',
 		'choices' => $countries,
 		'storeIn' => 'smartLicense',
 		'store' => 'territoriallyRestricted__selected',
@@ -115,18 +111,17 @@ $questions = [
 		'name' => 'Usage Rights',
 		'type' => 'radio',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Do you want to restrict the types of use that are covered by your license?',
 		'choices' => [
 			[
-				'name' => 'All Rights',
+				'name' => 'No',
 				'goto' => 12,
 				'set' => [
 					'usageRightsRestricted' => false
 				]
 			],
 			[
-				'name' => 'Some Rights',
+				'name' => 'Yes',
 				'goto' => 6,
 				'set' => [
 					'usageRightsRestricted' => true
@@ -144,18 +139,17 @@ $questions = [
 		'name' => 'Private Usage Rights',
 		'type' => 'radio',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Do you want to grant rights for the private use?',
 		'choices' => [
 			[
-				'name' => 'None',
+				'name' => 'No',
 				'goto' => 8,
 				'set' => [
 					'privateUsageRights' => false
 				]
 			],
 			[
-				'name' => 'Some Rights',
+				'name' => 'Yes',
 				'goto' => 7,
 				'set' => [
 					'privateUsageRights' => true
@@ -168,8 +162,7 @@ $questions = [
 		'name' => 'Types of Private usage rights',
 		'type' => 'checkbox',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'What types of private use rights do you want to license?',
 		'choices' => [
 			[
 				'name' => 'Reproduce',
@@ -201,11 +194,10 @@ $questions = [
 		'name' => 'Commercial/Institutional Rights',
 		'type' => 'radio',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Do you want to grant rights for the commercial or institutional use?',
 		'choices' => [
 			[
-				'name' => 'None',
+				'name' => 'No',
 				'goto' => 10,
 				'set' => [
 					'commercialInstitutionalRights' => false
@@ -219,7 +211,7 @@ $questions = [
 				]
 			],
 			[
-				'name' => 'Some Rights',
+				'name' => 'Yes',
 				'goto' => 9,
 				'set' => [
 					'commercialInstitutionalRights' => true
@@ -232,8 +224,7 @@ $questions = [
 		'name' => 'Types of Commercial/Institutional usage rights',
 		'type' => 'checkbox',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'What types of commercial and institutional rights do you want to license?',
 		'choices' => [
 			[
 				'name' => 'Reproduce',
@@ -275,8 +266,7 @@ $questions = [
 		'name' => 'Auditory/end-user',
 		'type' => 'checkbox',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Do you want to restrict what audience your licensor can address with your content?',
 		'choices' => [
 			[
 				'name' => 'Specific User Group',
@@ -298,11 +288,10 @@ $questions = [
 		'goto' => 11
 	],
 	11 => [
-		'name' => 'Grant use',
+		'name' => 'Grant Use',
 		'type' => 'checkbox',
 		'required' => true,
-		'text' => 'todo: add text',
-		'question' => 'todo: add question',
+		'question' => 'Do you want to allow your licensor to license the rights to third parties?',
 		'choices' => [
 			[
 				'name' => 'Sublicense',
