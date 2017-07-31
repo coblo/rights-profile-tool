@@ -4,42 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		var code = JSON.parse(document.querySelector('#rpc').value);
 
-		console.log(code);
+		console.log(validate(code));
 
 	});
-
-	var validator = new Ajv({allErrors: true});
-
-	var data = {
-		"sublicense": false,
-		"assign": true,
-		"specificUserGroup": true,
-		"generalPublic": false,
-		"commercialInstitutionalRights__selected": {
-			"reproduce": false,
-			"distributePhysicalCopy": true,
-			"availableForStreaming": false,
-			"availableForDownloading": false,
-			"lease": false,
-			"lend": false,
-			"advertise": true,
-			"derive": false
-		},
-		"commercialInstitutionalRights": true,
-		"privateUsageRights": true,
-		"privateUsageRights__selected": {
-			"reproduce":true,
-			"socialSharing":false,
-			"derive":true,
-			"resale":true
-		},
-		"usageRightsRestricted": true,
-		"exclusiveRights": false,
-		"territoriallyRestricted": true,
-		"temporarilyRestricted": true,
-		"originalCreator": true,
-		"publisherExploiter": false
-	};
 
 	var schema = {
 		title: 'rightsProfile',
@@ -86,10 +53,192 @@ document.addEventListener('DOMContentLoaded', function() {
 		additionalProperties: false
 	};
 
-	validator.validate(schema, data);
+	var validator = new Ajv({allErrors: true});
 
-	var syntacticalErrors = validator.errors;
+	function validate(data) {
 
-	console.log(syntacticalErrors);
+		validator.validate(schema, data);
+
+		var structureErrors = validator.errors || [];
+
+		var logicalErrors = [];
+
+		if (data.originalCreator === data.publisherExploiter) {
+
+			// the values must be different because it's a radio
+
+			logicalErrors[logicalErrors.length] = 'originalCreator and publisherExploiter can\'t have the same values';
+
+		}
+
+		// get all checked options from the rights-questions
+
+		var prop;
+		var privateUsageRights = [];
+		for (prop in data.privateUsageRights__selected) {
+
+			if (data.privateUsageRights__selected[prop]) {
+
+				privateUsageRights[privateUsageRights.length] = 'privateUsageRights__selected.' + prop;
+
+			}
+
+		}
+
+		var commercialInstitutionalRights = [];
+		for (prop in data.commercialInstitutionalRights__selected) {
+
+			if (data.commercialInstitutionalRights__selected[prop]) {
+
+				commercialInstitutionalRights[commercialInstitutionalRights.length] = 'commercialInstitutionalRights__selected.' + prop;
+
+			}
+
+		}
+
+		// some rights
+		if (data.usageRightsRestricted) {
+
+			if (!data.privateUsageRights && !data.commercialInstitutionalRights) {
+
+				logicalErrors[logicalErrors.length] = 'neither privateUsageRights or commercialInstitutionalRights are selected but usageRightsRestricted is set';
+
+			}
+
+			if ((privateUsageRights.length + commercialInstitutionalRights.length) === 0) {
+
+				logicalErrors[logicalErrors.length] = 'no rights from privateUsageRights__selected or commercialInstitutionalRights__selected are selected but usageRightsRestricted is set';
+
+			}
+
+			if (
+				(privateUsageRights.length === Object.keys(schema.properties.privateUsageRights__selected.properties).length)
+				&&
+				(commercialInstitutionalRights.length === Object.keys(schema.properties.commercialInstitutionalRights__selected.properties).length)
+			) {
+
+				privateUsageRights.concat(commercialInstitutionalRights).forEach(function(right) {
+
+					logicalErrors[logicalErrors.length] = right + ' selected but usageRightsRestricted is set';
+
+				});
+
+			}
+
+			if (data.specificUserGroup === data.generalPublic) {
+
+				logicalErrors[logicalErrors.length] = 'specificUserGroup and generalPublic can\'t have the same values';
+
+			}
+
+			if (data.sublicense === data.assign) {
+
+				logicalErrors[logicalErrors.length] = 'sublicense and assign can\'t have the same values';
+
+			}
+
+		}
+		// all rights
+		else {
+
+			if (data.privateUsageRights) {
+
+				logicalErrors[logicalErrors.length] = 'privateUsageRights set but usageRightsRestricted is false';
+
+			}
+
+			if (data.commercialInstitutionalRights) {
+
+				logicalErrors[logicalErrors.length] = 'commercialInstitutionalRights set but usageRightsRestricted is false';
+
+			}
+
+			if ((privateUsageRights.length + commercialInstitutionalRights.length) > 0) {
+
+				privateUsageRights.concat(commercialInstitutionalRights).forEach(function(right) {
+
+					logicalErrors[logicalErrors.length] = right + ' selected but usageRightsRestricted is false';
+
+				});
+
+			}
+
+			if (data.specificUserGroup) {
+
+				logicalErrors[logicalErrors.length] = 'specificUserGroup selected but usageRightsRestricted is false';
+
+			}
+
+			if (data.generalPublic) {
+
+				logicalErrors[logicalErrors.length] = 'generalPublic selected but usageRightsRestricted is false';
+
+			}
+
+			if (data.sublicense) {
+
+				logicalErrors[logicalErrors.length] = 'sublicense selected but usageRightsRestricted is false';
+
+			}
+
+			if (data.assign) {
+
+				logicalErrors[logicalErrors.length] = 'assign selected but usageRightsRestricted is false';
+
+			}
+
+		}
+
+		if (!data.privateUsageRights) {
+
+			// if checked options from privateUsageRights__selected exist => error
+			if (privateUsageRights.length) {
+
+				privateUsageRights.forEach(function(right) {
+
+					logicalErrors[logicalErrors.length] = right + ' not allowed because privateUsageRights is false';
+
+				});
+
+			}
+
+		}
+		else {
+
+			if (privateUsageRights.length === 0) {
+
+				logicalErrors[logicalErrors.length] = 'no rights from privateUsageRights__selected are selected but privateUsageRights is set';
+
+			}
+
+		}
+
+		if (!data.commercialInstitutionalRights) {
+
+			// if checked options from commercialInstitutionalRights__selected exist => error
+			if (commercialInstitutionalRights.length) {
+
+				commercialInstitutionalRights.forEach(function(right) {
+
+					logicalErrors[logicalErrors.length] = right + ' not allowed because commercialInstitutionalRights is false';
+
+				});
+
+			}
+
+		}
+		else {
+
+			if (commercialInstitutionalRights.length === 0) {
+
+				logicalErrors[logicalErrors.length] = 'no rights from commercialInstitutionalRights__selected are selected but commercialInstitutionalRights is set';
+
+			}
+
+		}
+
+		return {structure: structureErrors, logical: logicalErrors};
+
+	}
 
 });
