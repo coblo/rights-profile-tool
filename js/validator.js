@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		console.log(code);
 
 	});
-	narf = new Ajv({allErrors: true});
+	var narf = new Ajv({allErrors: true});
 
 	var data = {
 		"sublicense": false,
@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var schema = {
-		additionalProperties: false,
 		"title": "rightsProfile",
 		"type": "object",
 		"properties": {
@@ -51,21 +50,27 @@ document.addEventListener('DOMContentLoaded', function() {
 			"generalPublic": { "type": "boolean" },
 			"commercialInstitutionalRights": { "type": "boolean" },
 			"commercialInstitutionalRights__selected": {
-				"reproduce": { "type": "boolean" },
-				"distributePhysicalCopy": { "type": "boolean" },
-				"availableForStreaming": { "type": "boolean" },
-				"availableForDownloading": { "type": "boolean" },
-				"lease": { "type": "boolean" },
-				"lend": { "type": "boolean" },
-				"advertise": { "type": "boolean" },
-				"derive": { "type": "boolean" }
+				properties: {
+					"reproduce": { "type": "boolean" },
+					"distributePhysicalCopy": { "type": "boolean" },
+					"availableForStreaming": { "type": "boolean" },
+					"availableForDownloading": { "type": "boolean" },
+					"lease": { "type": "boolean" },
+					"lend": { "type": "boolean" },
+					"advertise": { "type": "boolean" },
+					"derive": { "type": "boolean" }
+				},
+				required: ["reproduce", "distributePhysicalCopy", "availableForStreaming", "availableForDownloading", "lease", "lend", "advertise", "derive"]
 			},
 			"privateUsageRights": {"type": "boolean"},
 			"privateUsageRights__selected":{
-				"reproduce": { "type": "boolean"},
-				"socialSharing": { "type": "boolean"},
-				"derive": { "type": "boolean"},
-				"resale": {"type": "boolean"}
+				properties: {
+					"reproduce": { "type": "boolean"},
+					"socialSharing": { "type": "boolean"},
+					"derive": { "type": "boolean"},
+					"resale": {"type": "boolean"}
+				},
+				required: ['reproduce', "socialSharing", "derive", "resale"]
 			},
 			"usageRightsRestricted": { "type": "boolean" },
 			"exclusiveRights": { "type": "boolean" },
@@ -75,64 +80,24 @@ document.addEventListener('DOMContentLoaded', function() {
 			"publisherExploiter": { "type": "boolean" }
 		},
 		"required": [
-			'originalCreator',
-			'publisherExploiter',
-			'temporarilyRestricted',
-			'territoriallyRestricted',
+			'sublicense',
+			'assign',
+			'specificUserGroup',
+			'generalPublic',
+			'commercialInstitutionalRights',
+			'commercialInstitutionalRights__selected',
+			'privateUsageRights',
+			'privateUsageRights__selected',
 			'usageRightsRestricted',
-			'exclusiveRights'
+			'exclusiveRights',
+			'territoriallyRestricted',
+			'temporarilyRestricted',
+			'originalCreator',
+			'publisherExploiter'
 		],
-		"allOf": [
-			{"$ref": "privateUsageRights"}
-		]
+		additionalProperties: false
 	};
-	var privateUsageRights = {
-		"$schema": "http://json-schema.org/draft-06/schema#",
-		"$id": "privateUsageRights",
-		"title": "privateUsageRights",
-		"type": "object",
-		"oneOf": [
-			{
-				"properties": {
-					"privateUsageRights": {
-						"enum": [true]
-					},
-					"privateUsageRights__selected":{
-						"type": "object",
-						"oneOf": [
-							{
-								"properties": {
-									"reproduce": {"enum": [true]},
-									"socialSharing": {"enum": [true, false]},
-									"derive": {"enum": [true, false]},
-									"resale": {"enum": [true, false]}
-								}
-							},
-							{
-								"properties": {
-									"reproduce": {"enum": [false]},
-									"socialSharing": {"enum": [false]},
-									"derive": {"enum": [false]},
-									"resale": {"enum": [true, false]}
-								}
-							}
-						],
-						"required": ["reproduce", "socialSharing", "derive", "resale"]
-					}
-				},
-				"required": ["privateUsageRights","privateUsageRights__selected"]
-			},
-			{
-				"properties": {
-					"privateUsageRights": {
-						"enum": [false]
-					}
-				},
-				"required":["privateUsageRights"]
-			}
-		]
-	};
-	narf.addSchema(privateUsageRights);
+
 	var asd = narf.validate(schema, data);
 	console.log(narf.errors);
 
