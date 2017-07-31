@@ -822,6 +822,9 @@ $(function() {
 
 		}
 
+		// be sure everything is set correctly
+		// and also set the values of skipped questions
+
 		// check if all rights are checked but the user said some rights and repair it
 		if (data.rightsProfile.usageRightsRestricted === true) {
 
@@ -853,15 +856,65 @@ $(function() {
 
 				data.rightsProfile.usageRightsRestricted = false;
 
-				delete data.rightsProfile.privateUsageRights;
-				delete data.rightsProfile.commercialInstitutionalRights;
+				data.rightsProfile.privateUsageRights = false;
+				data.rightsProfile.commercialInstitutionalRights = false;
 
-				delete data.rightsProfile.privateUsageRights__selected;
-				delete data.rightsProfile.commercialInstitutionalRights__selected;
+				questions[7].choices.forEach(function(choice, i) {
+
+					data.rightsProfile.privateUsageRights__selected[choice.value] = false;
+
+				});
+
+				questions[9].choices.forEach(function(choice, i) {
+
+					data.rightsProfile.commercialInstitutionalRights__selected[choice.value] = false;
+
+				});
 
 			}
 
 		}
+
+		data.rightsProfile.originalCreator = data.rightsProfile.originalCreator || false;
+		data.rightsProfile.publisherExploiter = data.rightsProfile.publisherExploiter || false;
+
+		data.rightsProfile.temporarilyRestricted = data.rightsProfile.temporarilyRestricted || false;
+
+		data.rightsProfile.territoriallyRestricted = data.rightsProfile.territoriallyRestricted || false;
+
+		data.rightsProfile.usageRightsRestricted = data.rightsProfile.usageRightsRestricted || false;
+		data.rightsProfile.exclusiveRights = data.rightsProfile.exclusiveRights || false;
+
+		data.rightsProfile.privateUsageRights = data.rightsProfile.privateUsageRights || false;
+
+		data.rightsProfile.privateUsageRights__selected = data.rightsProfile.privateUsageRights__selected || {};
+
+		questions[7].choices.forEach(function(choice, i) {
+
+			data.rightsProfile.privateUsageRights__selected[choice.value] = data.rightsProfile.privateUsageRights__selected[choice.value] || false;
+
+		});
+
+		data.rightsProfile.commercialInstitutionalRights = data.rightsProfile.commercialInstitutionalRights || false;
+
+		data.rightsProfile.commercialInstitutionalRights__selected = data.rightsProfile.commercialInstitutionalRights__selected || {};
+
+		questions[9].choices.forEach(function(choice, i) {
+
+			data.rightsProfile.commercialInstitutionalRights__selected[choice.value] = data.rightsProfile.commercialInstitutionalRights__selected[choice.value] || false;
+
+		});
+
+		data.rightsProfile.specificUserGroup = data.rightsProfile.specificUserGroup || false;
+		data.rightsProfile.generalPublic = data.rightsProfile.generalPublic || false;
+
+		data.rightsProfile.sublicense = data.rightsProfile.sublicense || false;
+		data.rightsProfile.assign = data.rightsProfile.assign || false;
+
+		// smart license
+
+		data.smartLicense.temporarilyRestricted__selected = data.smartLicense.temporarilyRestricted__selected || {from: null, to: null};
+		data.smartLicense.territoriallyRestricted__selected = data.smartLicense.territoriallyRestricted__selected || {};
 
 		console.log(data);
 		console.log(JSON.stringify(data, null, 2));
