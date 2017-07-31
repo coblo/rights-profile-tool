@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<title></title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="node_modules/material-components-web/dist/material-components-web.css">
+		<link rel="stylesheet" href="css/validator.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/5.2.2/ajv.min.js"></script>
+		<script src="js/validator.js"></script>
+	</head>
+	<body class="mdc-typography">
+
+		<div class="vertical">
+
+			<h2>Please enter your Rights Profile Code below</h2>
+
+			<div class="mdc-textfield mdc-textfield--multiline" data-mdc-auto-init="MDCTextfield">
+				<textarea id="rpc" class="mdc-textfield__input" rows="30"></textarea>
+				<label for="rpc" class="mdc-textfield__label">Rights Profile Code</label>
+			</div>
+
+			<button id="validate" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Validate</button>
+
+		</div>
+
+		<ul id="errors" class="mdc-list"></ul>
+
+		<script src="node_modules/material-components-web/dist/material-components-web.js"></script>
+		<script>mdc.autoInit();</script>
+	</body>
+</html>
