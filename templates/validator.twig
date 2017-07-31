@@ -13,14 +13,20 @@
 	</head>
 	<body class="mdc-typography">
 
-		Please enter your Rights Profile Code below.
+		<div class="vertical">
 
-		<div class="mdc-textfield mdc-textfield--multiline" data-mdc-auto-init="MDCTextfield">
-			<textarea id="rpc" class="mdc-textfield__input" rows="8" cols="40"></textarea>
-			<label for="rpc" class="mdc-textfield__label">Rights Profile Code</label>
+			<h2>Please enter your Rights Profile Code below</h2>
+
+			<div class="mdc-textfield mdc-textfield--multiline" data-mdc-auto-init="MDCTextfield">
+				<textarea id="rpc" class="mdc-textfield__input" rows="30"></textarea>
+				<label for="rpc" class="mdc-textfield__label">Rights Profile Code</label>
+			</div>
+
+			<button id="validate" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Validate</button>
+
 		</div>
 
-		<button id="validate" class="mdc-button mdc-button--raised mdc-button--primary" data-mdc-auto-init="MDCRipple">Validate</button>
+		<ul id="errors" class="mdc-list"></ul>
 
 		<script src="node_modules/material-components-web/dist/material-components-web.js"></script>
 		<script>mdc.autoInit();</script>

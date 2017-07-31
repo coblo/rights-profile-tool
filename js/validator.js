@@ -1,10 +1,81 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+	var $errors = document.querySelector('#errors');
+
 	document.querySelector('#validate').addEventListener('click', function() {
 
-		var code = JSON.parse(document.querySelector('#rpc').value);
+		$errors.innerText = '';
+		$errors.classList.remove('show');
 
-		console.log(validate(code));
+		var validationErrors,
+			errors = [];
+
+		try {
+
+			var code = JSON.parse(document.querySelector('#rpc').value);
+			validationErrors = validate(code);
+
+		} catch(e) {
+
+			errors[errors.length] = 'The given input is no valid JSON!';
+
+		}
+
+		if (validationErrors) {
+
+			errors = errors.concat(validationErrors.structure.map(function(error) {
+
+				return error.dataPath ? (error.dataPath + ': ') : '' + error.message;
+
+			}));
+
+			errors = errors.concat(validationErrors.logic);
+
+		}
+
+		if (errors.length) {
+
+			errors.forEach(function(error, i) {
+
+				if (i !== 0) {
+
+					var $separator = document.createElement('li');
+
+					$separator.setAttribute('role', 'separator');
+					$separator.className = 'mdc-list-divider';
+
+					$errors.appendChild($separator);
+
+				}
+
+				var $error = document.createElement('li');
+
+				$error.className = 'mdc-list-item';
+
+				$error.innerText = error;
+
+				$errors.appendChild($error);
+
+				mdc.ripple.MDCRipple.attachTo($error);
+
+			});
+
+		}
+		else {
+
+			var $message = document.createElement('li');
+
+			$message.className = 'mdc-list-item correct';
+
+			$message.innerText = 'This Rights Profile Code is valid';
+
+			$errors.appendChild($message);
+
+			mdc.ripple.MDCRipple.attachTo($message);
+
+		}
+
+		$errors.classList.add('show');
 
 	});
 
@@ -61,13 +132,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		var structureErrors = validator.errors || [];
 
-		var logicalErrors = [];
+		var logicErrors = [];
 
 		if (data.originalCreator === data.publisherExploiter) {
 
 			// the values must be different because it's a radio
 
-			logicalErrors[logicalErrors.length] = 'originalCreator and publisherExploiter can\'t have the same values';
+			logicErrors[logicErrors.length] = 'originalCreator and publisherExploiter can\'t have the same values';
 
 		}
 
@@ -101,13 +172,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (!data.privateUsageRights && !data.commercialInstitutionalRights) {
 
-				logicalErrors[logicalErrors.length] = 'neither privateUsageRights or commercialInstitutionalRights are selected but usageRightsRestricted is set';
+				logicErrors[logicErrors.length] = 'neither privateUsageRights or commercialInstitutionalRights are selected but usageRightsRestricted is set';
 
 			}
 
 			if ((privateUsageRights.length + commercialInstitutionalRights.length) === 0) {
 
-				logicalErrors[logicalErrors.length] = 'no rights from privateUsageRights__selected or commercialInstitutionalRights__selected are selected but usageRightsRestricted is set';
+				logicErrors[logicErrors.length] = 'no rights from privateUsageRights__selected or commercialInstitutionalRights__selected are selected but usageRightsRestricted is set';
 
 			}
 
@@ -119,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				privateUsageRights.concat(commercialInstitutionalRights).forEach(function(right) {
 
-					logicalErrors[logicalErrors.length] = right + ' selected but usageRightsRestricted is set';
+					logicErrors[logicErrors.length] = right + ' selected but usageRightsRestricted is set';
 
 				});
 
@@ -127,13 +198,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (data.specificUserGroup === data.generalPublic) {
 
-				logicalErrors[logicalErrors.length] = 'specificUserGroup and generalPublic can\'t have the same values';
+				logicErrors[logicErrors.length] = 'specificUserGroup and generalPublic can\'t have the same values';
 
 			}
 
 			if (data.sublicense === data.assign) {
 
-				logicalErrors[logicalErrors.length] = 'sublicense and assign can\'t have the same values';
+				logicErrors[logicErrors.length] = 'sublicense and assign can\'t have the same values';
 
 			}
 
@@ -143,13 +214,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (data.privateUsageRights) {
 
-				logicalErrors[logicalErrors.length] = 'privateUsageRights set but usageRightsRestricted is false';
+				logicErrors[logicErrors.length] = 'privateUsageRights set but usageRightsRestricted is false';
 
 			}
 
 			if (data.commercialInstitutionalRights) {
 
-				logicalErrors[logicalErrors.length] = 'commercialInstitutionalRights set but usageRightsRestricted is false';
+				logicErrors[logicErrors.length] = 'commercialInstitutionalRights set but usageRightsRestricted is false';
 
 			}
 
@@ -157,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				privateUsageRights.concat(commercialInstitutionalRights).forEach(function(right) {
 
-					logicalErrors[logicalErrors.length] = right + ' selected but usageRightsRestricted is false';
+					logicErrors[logicErrors.length] = right + ' selected but usageRightsRestricted is false';
 
 				});
 
@@ -165,25 +236,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (data.specificUserGroup) {
 
-				logicalErrors[logicalErrors.length] = 'specificUserGroup selected but usageRightsRestricted is false';
+				logicErrors[logicErrors.length] = 'specificUserGroup selected but usageRightsRestricted is false';
 
 			}
 
 			if (data.generalPublic) {
 
-				logicalErrors[logicalErrors.length] = 'generalPublic selected but usageRightsRestricted is false';
+				logicErrors[logicErrors.length] = 'generalPublic selected but usageRightsRestricted is false';
 
 			}
 
 			if (data.sublicense) {
 
-				logicalErrors[logicalErrors.length] = 'sublicense selected but usageRightsRestricted is false';
+				logicErrors[logicErrors.length] = 'sublicense selected but usageRightsRestricted is false';
 
 			}
 
 			if (data.assign) {
 
-				logicalErrors[logicalErrors.length] = 'assign selected but usageRightsRestricted is false';
+				logicErrors[logicErrors.length] = 'assign selected but usageRightsRestricted is false';
 
 			}
 
@@ -196,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				privateUsageRights.forEach(function(right) {
 
-					logicalErrors[logicalErrors.length] = right + ' not allowed because privateUsageRights is false';
+					logicErrors[logicErrors.length] = right + ' not allowed because privateUsageRights is false';
 
 				});
 
@@ -207,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (privateUsageRights.length === 0) {
 
-				logicalErrors[logicalErrors.length] = 'no rights from privateUsageRights__selected are selected but privateUsageRights is set';
+				logicErrors[logicErrors.length] = 'no rights from privateUsageRights__selected are selected but privateUsageRights is set';
 
 			}
 
@@ -220,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				commercialInstitutionalRights.forEach(function(right) {
 
-					logicalErrors[logicalErrors.length] = right + ' not allowed because commercialInstitutionalRights is false';
+					logicErrors[logicErrors.length] = right + ' not allowed because commercialInstitutionalRights is false';
 
 				});
 
@@ -231,13 +302,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (commercialInstitutionalRights.length === 0) {
 
-				logicalErrors[logicalErrors.length] = 'no rights from commercialInstitutionalRights__selected are selected but commercialInstitutionalRights is set';
+				logicErrors[logicErrors.length] = 'no rights from commercialInstitutionalRights__selected are selected but commercialInstitutionalRights is set';
 
 			}
 
 		}
 
-		return {structure: structureErrors, logical: logicalErrors};
+		return {structure: structureErrors, logic: logicErrors};
 
 	}
 
