@@ -206,8 +206,8 @@ $questions = [
 					'notChecked' => '6-0'
 				],
 				'customError' => [
-					'general' => 'You selected "Some Rights" in question number 6 but selected "None" in this question and question number 7',
-					'option' => 'Please select "Some Rights" or go back to question number 7 or 6'
+					'general' => 'You selected "Yes" in question number 6 but selected "No" in this question and question number 7',
+					'option' => 'Please select "Yes" or go back to question number 7 or 6'
 				]
 			],
 			[
